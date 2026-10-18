@@ -23,7 +23,7 @@ const configuredValues = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "",
 };
 
-// Fail closed if deployment variables still point at The Plug, Africhiko, or another project.
+// Fail closed unless deployment variables match the dedicated Yusuf project exactly.
 const matchesYusufProject = Object.entries(expectedFirebaseConfig).every(([key, expected]) =>
   configuredValues[key as keyof typeof expectedFirebaseConfig] === expected
 );
