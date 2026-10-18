@@ -15,8 +15,8 @@ try {
       const title = payload.data?.title || "Yusuf Clothing Line update";
       const options = {
         body: payload.data?.body || "Open Yusuf Clothing Line to check your latest order information.",
-        icon: "/yusuf-icon.svg",
-        badge: "/yusuf-icon.svg",
+        icon: "/yusuf-icon-192.png",
+        badge: "/yusuf-icon-192.png",
         data: { link: payload.data?.link || "/account" },
       };
       self.registration.showNotification(title, options);
@@ -48,7 +48,7 @@ const MEDIA_CACHE = "yusuf-clothing-media-v1";
 const SHELL_CACHE = CACHE_VERSION;
 const STATIC_LIMIT = 100;
 const PUBLIC_PAGE_LIMIT = 12;
-const APP_SHELL = ["/", "/request", "/offline", "/yusuf-icon.svg", "/manifest.webmanifest"];
+const APP_SHELL = ["/", "/request", "/offline", "/yusuf-icon.svg", "/yusuf-icon-192.png", "/yusuf-icon-512.png", "/manifest.webmanifest"];
 
 self.addEventListener("install", event => {
   event.waitUntil((async () => {
