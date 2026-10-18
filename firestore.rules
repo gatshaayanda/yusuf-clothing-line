@@ -484,6 +484,152 @@ service cloud.firestore {
       allow create, update: if isAdmin() && validReconciliation();
     }
 
+
+    // Yusuf service catalogue: customer-readable active services, admin-managed CRUD.
+    match /tailoringServices/{serviceId} {
+      function validTailoringService() {
+        return request.resource.data.keys().hasOnly([
+            'name', 'category', 'description', 'priceLabel', 'illustrativePrice',
+            'imageUrl', 'active', 'sortOrder', 'createdAt', 'updatedAt'
+          ])
+          && request.resource.data.keys().hasAll([
+            'name', 'category', 'description', 'priceLabel', 'illustrativePrice',
+            'imageUrl', 'active', 'sortOrder', 'createdAt', 'updatedAt'
+          ])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 120
+          && request.resource.data.category is string
+          && request.resource.data.category.size() <= 80
+          && request.resource.data.description is string
+          && request.resource.data.description.size() <= 2000
+          && request.resource.data.priceLabel is string
+          && request.resource.data.priceLabel.size() <= 120
+          && (request.resource.data.illustrativePrice == null
+            || (request.resource.data.illustrativePrice is number && request.resource.data.illustrativePrice >= 0))
+          && request.resource.data.imageUrl is string
+          && request.resource.data.active is bool
+          && request.resource.data.sortOrder is number
+          && request.resource.data.createdAt is string
+          && request.resource.data.updatedAt is string;
+      }
+
+      allow read: if isAdmin() || resource.data.active == true;
+      allow create: if isAdmin() && validTailoringService();
+      allow update: if isAdmin() && validTailoringService();
+      // Requests store service name/price snapshots, so removing a service cannot rewrite history.
+      allow delete: if isAdmin();
+    }
+
+    // Private customer request and operations record. A request is not an order/quote until
+    // Yusuf records those separate business decisions.
+    match /tailoringRequests/{requestId} {
+      function validNewTailoringRequest() {
+        return request.resource.data.keys().hasOnly([
+            'customerId', 'customerName', 'phone', 'email', 'requestType',
+            'serviceId', 'serviceName', 'garmentType', 'stylePreferences',
+            'fabricPreferences', 'measurements', 'needsFittingHelp',
+            'preferredFittingDate', 'referenceImage', 'notes', 'status',
+            'quoteStatus', 'paymentStatus', 'productionStage', 'createdAt', 'updatedAt'
+          ])
+          && request.resource.data.keys().hasAll([
+            'customerId', 'customerName', 'phone', 'email', 'requestType',
+            'serviceId', 'serviceName', 'garmentType', 'stylePreferences',
+            'fabricPreferences', 'measurements', 'needsFittingHelp',
+            'preferredFittingDate', 'referenceImage', 'notes', 'status',
+            'quoteStatus', 'paymentStatus', 'productionStage', 'createdAt', 'updatedAt'
+          ])
+          && request.resource.data.customerId == request.auth.uid
+          && request.resource.data.customerName is string
+          && request.resource.data.customerName.size() > 0
+          && request.resource.data.customerName.size() <= 120
+          && request.resource.data.phone is string
+          && request.resource.data.phone.size() > 0
+          && request.resource.data.phone.size() <= 60
+          && request.resource.data.email is string
+          && request.resource.data.email.size() <= 200
+          && request.resource.data.requestType == 'quote_request'
+          && request.resource.data.serviceId is string
+          && request.resource.data.serviceId.size() <= 120
+          && request.resource.data.serviceName is string
+          && request.resource.data.serviceName.size() > 0
+          && request.resource.data.serviceName.size() <= 120
+          && request.resource.data.garmentType is string
+          && request.resource.data.garmentType.size() > 0
+          && request.resource.data.garmentType.size() <= 120
+          && request.resource.data.stylePreferences is string
+          && request.resource.data.stylePreferences.size() <= 1500
+          && request.resource.data.fabricPreferences is string
+          && request.resource.data.fabricPreferences.size() <= 500
+          && request.resource.data.measurements is string
+          && request.resource.data.measurements.size() <= 3000
+          && request.resource.data.needsFittingHelp is bool
+          && request.resource.data.preferredFittingDate is string
+          && request.resource.data.notes is string
+          && request.resource.data.notes.size() <= 3000
+          && request.resource.data.status == 'new'
+          && request.resource.data.quoteStatus == 'not_quoted'
+          && request.resource.data.paymentStatus == 'unpaid'
+          && request.resource.data.productionStage == 'not_started'
+          && request.resource.data.createdAt is string
+          && request.resource.data.updatedAt is string
+          && (
+            request.resource.data.referenceImage == null
+            || (
+              request.resource.data.referenceImage is map
+              && request.resource.data.referenceImage.keys().hasOnly(['storagePath', 'name', 'type', 'size'])
+              && request.resource.data.referenceImage.storagePath is string
+              && request.resource.data.referenceImage.storagePath.matches('tailoringReferences/' + request.auth.uid + '/' + requestId + '/.*')
+              && request.resource.data.referenceImage.name is string
+              && request.resource.data.referenceImage.name.size() <= 180
+              && request.resource.data.referenceImage.type in ['image/jpeg', 'image/png', 'image/webp', 'image/avif']
+              && request.resource.data.referenceImage.size is number
+              && request.resource.data.referenceImage.size > 0
+              && request.resource.data.referenceImage.size <= 5 * 1024 * 1024
+            )
+          );
+      }
+
+      function validAdminRequestUpdate() {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'status', 'quoteStatus', 'quoteAmount', 'quoteNotes', 'quoteAcceptedAt',
+            'quoteAcceptedAmount', 'depositRequired', 'depositPaid', 'paymentStatus',
+            'productionStage', 'fittingDate', 'dueDate', 'collectionMethod',
+            'adminNotes', 'completedAt', 'collectedAt', 'updatedAt'
+          ])
+          && request.resource.data.status in [
+            'new', 'reviewing', 'awaiting_customer', 'quote_ready', 'quote_accepted',
+            'confirmed', 'in_production', 'ready_for_fitting', 'alterations',
+            'ready_for_collection', 'completed', 'collected', 'cancelled'
+          ]
+          && request.resource.data.quoteStatus in ['not_quoted', 'ready', 'accepted', 'declined']
+          && request.resource.data.paymentStatus in ['unpaid', 'deposit_pending', 'partially_paid', 'paid', 'refunded']
+          && request.resource.data.productionStage in [
+            'not_started', 'awaiting_fabric', 'cutting', 'sewing', 'fitting',
+            'alterations', 'quality_check', 'ready_for_collection', 'collected', 'cancelled'
+          ]
+          && (!request.resource.data.keys().hasAny(['quoteAmount'])
+            || (request.resource.data.quoteAmount is number && request.resource.data.quoteAmount >= 0))
+          && (!request.resource.data.keys().hasAny(['quoteAcceptedAmount'])
+            || (request.resource.data.quoteAcceptedAmount is number && request.resource.data.quoteAcceptedAmount >= 0))
+          && (!request.resource.data.keys().hasAny(['depositRequired'])
+            || (request.resource.data.depositRequired is number && request.resource.data.depositRequired >= 0))
+          && (!request.resource.data.keys().hasAny(['depositPaid'])
+            || (request.resource.data.depositPaid is number && request.resource.data.depositPaid >= 0))
+          && (!request.resource.data.keys().hasAny(['quoteNotes']) || request.resource.data.quoteNotes is string)
+          && (!request.resource.data.keys().hasAny(['adminNotes']) || request.resource.data.adminNotes is string)
+          && (!request.resource.data.keys().hasAny(['fittingDate']) || request.resource.data.fittingDate is string)
+          && (!request.resource.data.keys().hasAny(['dueDate']) || request.resource.data.dueDate is string)
+          && (!request.resource.data.keys().hasAny(['collectionMethod']) || request.resource.data.collectionMethod in ['collection', 'delivery', 'not_set'])
+          && request.resource.data.updatedAt is string;
+      }
+
+      allow create: if signedIn() && !isAdmin() && validNewTailoringRequest();
+      allow read: if isAdmin() || (signedIn() && resource.data.customerId == request.auth.uid);
+      allow update: if isAdmin() && validAdminRequestUpdate();
+      allow delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
