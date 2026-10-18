@@ -962,3 +962,81 @@ button.plugProductAction{width:100%;align-items:center;background:transparent;bo
 .yusufRequestActions{display:flex;gap:18px;flex-wrap:wrap;margin-top:25px}
 .yusufRequestActions a{font-size:.8rem;font-weight:800;border-bottom:1px solid #bca89b;padding-bottom:6px}
 @media(max-width:800px){.yusufRequestLayout{grid-template-columns:1fr;width:min(760px,calc(100% - 28px));gap:28px;padding-top:35px}.yusufRequestIntro{position:static}.yusufRequestIntro h1{font-size:clamp(3rem,12vw,4.7rem)}.yusufPrivacyNote{margin-top:22px}.yusufRequestForm{padding:20px 16px}.yusufFormGrid{grid-template-columns:1fr}.yusufRequestHeader{padding:14px}.yusufRequestSuccess>.yusufFooterBrand{margin-bottom:45px}}
+
+
+/* Yusuf Clothing Line — private operations workspace */
+.yusufAdminPage{--yusuf-wine:#6B2636;--yusuf-wine-dark:#451723;--yusuf-paper:#F8F5F0;--yusuf-ink:#24201F;--yusuf-muted:#6D6561;min-height:100vh;background:var(--yusuf-paper);color:var(--yusuf-ink);font-family:Arial,Helvetica,sans-serif;padding:24px clamp(14px,4vw,56px) 35px}
+.yusufAdminPage button,.yusufAdminPage input,.yusufAdminPage select,.yusufAdminPage textarea{font:inherit}
+.yusufAdminHeader{display:flex;justify-content:space-between;align-items:end;gap:30px;padding:15px 0 35px;border-bottom:1px solid #e2d8cf}
+.yusufAdminHeader .yusufFooterBrand{display:inline-block;margin-bottom:30px}
+.yusufAdminHeader h1{font-family:Georgia,serif;text-transform:none;font-weight:400;font-size:clamp(2.8rem,6vw,5.4rem);line-height:.94;letter-spacing:-.055em;margin:0}
+.yusufAdminHeader h1 em{font-weight:400;color:var(--yusuf-wine)}
+.yusufAdminHeaderNote{max-width:280px;display:grid;gap:9px;border-left:2px solid #b68b5e;padding:5px 0 5px 15px}
+.yusufAdminHeaderNote strong{font-family:Georgia,serif;font-weight:400;font-size:1.2rem}
+.yusufAdminHeaderNote span{font-size:.76rem;line-height:1.65;color:#766a62}
+.yusufAdminStats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:20px 0}
+.yusufAdminStats article{background:#fff;border:1px solid #e3d9cf;padding:17px}
+.yusufAdminStats small{display:block;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:#7a6d65}
+.yusufAdminStats strong{display:block;font-family:Georgia,serif;font-size:2.3rem;font-weight:400;color:var(--yusuf-wine);margin-top:8px}
+.yusufAdminTabs{display:flex;gap:7px;border-bottom:1px solid #ddd1c5;margin:10px 0 20px}
+.yusufAdminTabs button{border:0;background:transparent;padding:14px 16px;color:#756a63;font-size:.8rem;font-weight:700;cursor:pointer;border-bottom:2px solid transparent}
+.yusufAdminTabs button[aria-selected="true"]{color:var(--yusuf-wine);border-color:var(--yusuf-wine)}
+.yusufAdminTabs button span{font-size:.67rem;background:#eee6dc;padding:3px 7px;border-radius:99px;margin-left:6px}
+.yusufAdminPanel{background:#fff;border:1px solid #e3d9cf;padding:clamp(16px,3vw,30px)}
+.yusufAdminPanelIntro{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:22px}
+.yusufAdminPanelIntro .yusufEyebrow{margin-bottom:8px}
+.yusufAdminPanelIntro h2{font-family:Georgia,serif;text-transform:none;font-size:2rem;font-weight:400;margin:0}
+.yusufAdminPanelIntro>p{max-width:390px;font-size:.75rem;line-height:1.65;color:#766a62;margin:0}
+.yusufAdminServiceForm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:20px;background:#f8f5f0;border:1px solid #e9e0d7}
+.yusufAdminServiceForm label,.yusufAdminRequestFields label{display:grid;gap:7px;font-size:.72rem;font-weight:700;color:#534943}
+.yusufAdminServiceForm label.wide,.yusufAdminRequestFields label.wide{grid-column:1/-1}
+.yusufAdminServiceForm input:not([type="checkbox"]),.yusufAdminServiceForm textarea,.yusufAdminRequestFields input,.yusufAdminRequestFields select,.yusufAdminRequestFields textarea,.yusufAdminFilters input,.yusufAdminFilters select{width:100%;min-width:0;background:#fff;border:1px solid #d9cec4;border-radius:0;padding:11px;color:#28211e;font-size:.78rem;outline:none}
+.yusufAdminServiceForm input:focus,.yusufAdminServiceForm textarea:focus,.yusufAdminRequestFields input:focus,.yusufAdminRequestFields select:focus,.yusufAdminRequestFields textarea:focus,.yusufAdminFilters input:focus,.yusufAdminFilters select:focus{border-color:var(--yusuf-wine);box-shadow:0 0 0 3px rgba(107,38,54,.1)}
+.yusufAdminCheck{display:flex!important;align-items:center;gap:9px!important}
+.yusufAdminCheck input{accent-color:var(--yusuf-wine)}
+.yusufAdminFormActions{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap}
+.yusufAdminFormActions button,.yusufAdminRequestFooter button{border:0;background:var(--yusuf-wine);color:#fff;padding:12px 15px;font-size:.76rem;font-weight:800;cursor:pointer}
+.yusufAdminFormActions button.secondary{background:transparent;color:var(--yusuf-wine);border:1px solid #cdb9b2}
+.yusufAdminFormActions button:disabled,.yusufAdminRequestFooter button:disabled{opacity:.6;cursor:wait}
+.yusufAdminListHeading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:28px 0 12px}
+.yusufAdminListHeading h3{font-family:Georgia,serif;text-transform:none;font-size:1.35rem;font-weight:400;margin:0}
+.yusufAdminListHeading span{font-size:.7rem;color:#766a62}
+.yusufAdminServiceList{display:grid;gap:8px}
+.yusufAdminServiceList article{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:14px;border:1px solid #e4dbd1}
+.yusufAdminServiceList article.inactive{opacity:.68;background:#f4f0eb}
+.yusufAdminServiceList article strong,.yusufAdminServiceList article small{display:block}
+.yusufAdminServiceList article strong{font-family:Georgia,serif;font-size:1.08rem;font-weight:400}
+.yusufAdminServiceList article small{font-size:.66rem;color:var(--yusuf-wine);margin-top:5px}
+.yusufAdminServiceList article p{font-size:.74rem;line-height:1.55;color:#746962;margin:7px 0 0}
+.yusufAdminRowActions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.yusufAdminRowActions span{font-size:.62rem;color:#6f665f;margin-right:5px}
+.yusufAdminRowActions button,.yusufAdminReference button{border:1px solid #d7c8bc;background:#fff;padding:8px 10px;color:var(--yusuf-wine);font-size:.68rem;font-weight:800;cursor:pointer}
+.yusufAdminRowActions button.danger{color:#922f36;border-color:#e5c4c4}
+.yusufAdminRowActions button:disabled{opacity:.5}
+.yusufAdminFilters{display:grid;grid-template-columns:1fr 220px;gap:10px;margin-bottom:15px}
+.yusufAdminRequestList{display:grid;gap:12px}
+.yusufAdminRequest{border:1px solid #e2d8cf;padding:clamp(14px,2vw,22px)}
+.yusufAdminRequestTop{display:flex;justify-content:space-between;align-items:start;gap:15px;padding-bottom:14px;border-bottom:1px solid #e9e0d7}
+.yusufAdminRequestId{font-size:.59rem;letter-spacing:.15em;color:var(--yusuf-wine);font-weight:800}
+.yusufAdminRequestTop h3{font-family:Georgia,serif;text-transform:none;font-size:1.28rem;font-weight:400;margin:7px 0}
+.yusufAdminRequestTop h3 span{color:#776a62;font-size:1rem}
+.yusufAdminRequestTop p{font-size:.72rem;line-height:1.5;color:#71665f;margin:0}
+.yusufAdminRequestTop time{font-size:.65rem;color:#7b7068;white-space:nowrap}
+.yusufAdminBrief{display:grid;gap:7px;padding:13px 0}
+.yusufAdminBrief p{display:grid;grid-template-columns:100px 1fr;gap:10px;font-size:.74rem;line-height:1.55;color:#5f554f;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.yusufAdminBrief p b{color:#2f2925;font-size:.67rem}
+.yusufAdminReference{display:grid;gap:10px;justify-items:start}
+.yusufAdminReference img{max-width:min(100%,480px);max-height:360px;object-fit:contain;border:1px solid #e3d9cf;background:#f8f5f0}
+.yusufAdminRequestFields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;background:#f8f5f0;border:1px solid #e9e0d7;padding:15px}
+.yusufAdminRequestFooter{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:13px}
+.yusufAdminRequestFooter span{font-size:.65rem;color:#7c7068}
+.yusufAdminEmpty{padding:40px 15px;text-align:center;background:#f8f5f0;color:#655a54}
+.yusufAdminEmpty strong{font-family:Georgia,serif;font-size:1.3rem;font-weight:400}
+.yusufAdminEmpty p{font-size:.75rem}
+.yusufAdminError,.yusufAdminNotice{padding:12px 15px;font-size:.78rem;line-height:1.6;margin:12px 0}
+.yusufAdminError{background:#f9e7e6;border:1px solid #c97d7b;color:#7c2028}
+.yusufAdminNotice{background:#e7f1e7;border:1px solid #9ebc9d;color:#23522b}
+.yusufAdminFooter{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;margin-top:25px;font-size:.7rem;color:#7c7068}
+.yusufAdminFooter a{color:var(--yusuf-wine);font-weight:700}
+@media(max-width:900px){.yusufAdminHeader{align-items:flex-start;flex-direction:column}.yusufAdminHeaderNote{max-width:430px}.yusufAdminStats{grid-template-columns:repeat(2,minmax(0,1fr))}.yusufAdminPanelIntro{display:block}.yusufAdminPanelIntro>p{margin-top:12px}.yusufAdminRequestFields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.yusufAdminPage{padding-left:12px;padding-right:12px}.yusufAdminStats article{padding:13px}.yusufAdminStats strong{font-size:1.8rem}.yusufAdminTabs button{padding:12px 8px;font-size:.7rem}.yusufAdminPanel{padding:12px}.yusufAdminServiceForm{grid-template-columns:1fr;padding:12px}.yusufAdminServiceForm label.wide,.yusufAdminRequestFields label.wide,.yusufAdminFormActions{grid-column:auto}.yusufAdminServiceList article{align-items:flex-start;flex-direction:column}.yusufAdminRowActions{justify-content:flex-start}.yusufAdminFilters{grid-template-columns:1fr}.yusufAdminRequestTop{flex-direction:column}.yusufAdminRequestFields{grid-template-columns:1fr}.yusufAdminRequestFooter{align-items:flex-start;flex-direction:column}.yusufAdminBrief p{grid-template-columns:78px 1fr}}
