@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  collection, deleteDoc, doc, getDocs, onSnapshot, query, setDoc, updateDoc, where, writeBatch
+  collection, deleteDoc, doc, getDocs, onSnapshot, query, setDoc, updateDoc, writeBatch
 } from "firebase/firestore";
 import { getBlob, ref } from "firebase/storage";
 import { db, hasFirebaseWebConfig, storage } from "@/lib/firebase/client";
