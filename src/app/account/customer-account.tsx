@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import CustomerAccountLink from "@/components/CustomerAccountLink";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, signInAnonymously, type User } from "firebase/auth";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
@@ -101,7 +102,7 @@ export default function CustomerAccount() {
         <p className="yusufEyebrow">YOUR PRIVATE SPACE</p>
         <h1>Your requests.<br /><em>Your fit.</em></h1>
         <p>Review your requests, quotations, fitting dates and recorded progress in one place.</p>
-        {user?.isAnonymous && <small>This private session is tied to this browser/device. Cross-device account linking is not available in this initial version.</small>}
+        {user?.isAnonymous && <small>This session starts privately on this device. Link an email and password below to keep this request history accessible across devices.</small>}
       </section>
       {message && <p className="yusufAccountNotice" role="status">{message}</p>}
       {error && <p className="yusufAccountError" role="alert">{error}</p>}
@@ -120,6 +121,7 @@ export default function CustomerAccount() {
           </article>
         ))}
       </section>
+      <CustomerAccountLink user={user} requestsCount={requests.length} />
       <footer className="yusufAccountFooter"><Link href="/">Back to the studio</Link><span>Requests are not confirmed orders until the business records confirmation.</span></footer>
     </main>
   );
