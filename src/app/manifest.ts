@@ -16,10 +16,12 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ["shopping", "lifestyle"],
     prefer_related_applications: false,
     icons: [
+      { src: "/yusuf-icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/yusuf-icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
       { src: "/yusuf-icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" }
     ],
     shortcuts: [
-      { name: "Request tailoring", short_name: "Request", description: "Request tailoring or alterations", url: "/request", icons: [{ src: "/yusuf-icon.svg", sizes: "any", type: "image/svg+xml" }] },
+      { name: "Request tailoring", short_name: "Request", description: "Request tailoring or alterations", url: "/request", icons: [{ src: "/yusuf-icon-192.png", sizes: "192x192", type: "image/png" }] },
       { name: "My orders", short_name: "Orders", description: "View your requests and order history", url: "/account", icons: [{ src: "/yusuf-icon.svg", sizes: "any", type: "image/svg+xml" }] },
       { name: "Business admin", short_name: "Admin", description: "Manage tailoring operations", url: "/admin", icons: [{ src: "/yusuf-icon.svg", sizes: "any", type: "image/svg+xml" }] }
     ]
