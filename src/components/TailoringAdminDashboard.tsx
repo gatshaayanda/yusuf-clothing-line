@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   collection, deleteDoc, doc, getDocs, onSnapshot, query, setDoc, updateDoc, where, writeBatch
 } from "firebase/firestore";
-import { getBlob, ref, storage } from "firebase/storage";
-import { db, hasFirebaseWebConfig } from "@/lib/firebase/client";
+import { getBlob, ref } from "firebase/storage";
+import { db, hasFirebaseWebConfig, storage } from "@/lib/firebase/client";
 
 type ServiceRecord = {
   id: string; name: string; category: string; description: string; priceLabel: string;
@@ -86,6 +86,7 @@ export default function TailoringAdminDashboard() {
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [referencePreviews, setReferencePreviews] = useState<Record<string, string>>({});
+  const previewUrlsRef = useRef<string[]>([]);
 
   useEffect(() => {
     if (!hasFirebaseWebConfig) { setError("Firebase web configuration is missing. Admin data cannot be loaded."); return; }
@@ -119,8 +120,9 @@ export default function TailoringAdminDashboard() {
   }, []);
 
   useEffect(() => () => {
-    Object.values(referencePreviews).forEach(url => URL.revokeObjectURL(url));
-  }, [referencePreviews]);
+    previewUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
+    previewUrlsRef.current = [];
+  }, []);
 
   const visibleRequests = useMemo(() => requests.filter(item => {
     const term = search.trim().toLowerCase();
@@ -213,8 +215,9 @@ export default function TailoringAdminDashboard() {
     if (!path || referencePreviews[item.id]) return;
     setError("");
     try {
-      const blob = await getBlob(ref((await import("@/lib/firebase/client")).storage, path));
+      const blob = await getBlob(ref(storage, path));
       const url = URL.createObjectURL(blob);
+      previewUrlsRef.current.push(url);
       setReferencePreviews(current => ({ ...current, [item.id]: url }));
     } catch { setError("The reference image could not be retrieved with this admin session."); }
   }
@@ -230,7 +233,7 @@ export default function TailoringAdminDashboard() {
       <div className="yusufAdminStats">
         <article><small>New requests</small><strong>{count("new")}</strong></article>
         <article><small>Quotes ready</small><strong>{count("quote_ready")}</strong></article>
-        <article><small>In production</small><strong={undefined as never}>{count("in_production")}</strong></article>
+        <article><small>In production</small><strong>{count("in_production")}</strong></article>
         <article><small>Ready to collect</small><strong>{count("ready_for_collection")}</strong></article>
       </div>
       <div className="yusufAdminTabs" role="tablist" aria-label="Business workspace">
