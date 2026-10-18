@@ -20,6 +20,10 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Identity verification
+        run: npm run verify:identity
+      - name: Clone readiness
+        run: npm run verify:clone-readiness
       - name: TypeScript
         run: npx tsc --noEmit
       - name: Lint
