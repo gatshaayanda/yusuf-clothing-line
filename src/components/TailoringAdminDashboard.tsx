@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  collection, deleteDoc, doc, getDocs, onSnapshot, query, setDoc, updateDoc, writeBatch
+  collection, deleteDoc, doc, getDocs, onSnapshot, query, setDoc, updateDoc, waitForPendingWrites, writeBatch
 } from "firebase/firestore";
 import { getBlob, ref } from "firebase/storage";
 import { db, hasFirebaseWebConfig, storage } from "@/lib/firebase/client";
@@ -67,6 +67,12 @@ function requestDraft(item: RequestRecord): RequestDraft {
     adminNotes: item.adminNotes || ""
   };
 }
+async function confirmServerWrite() {
+  await new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("SERVER_ACK_TIMEOUT")), 15000);
+    void waitForPendingWrites(db).then(() => { clearTimeout(timer); resolve(); }).catch(error => { clearTimeout(timer); reject(error); });
+  });
+}
 function moneyInput(value: string): number | null {
   if (!value.trim()) return null;
   const parsed = Number(value);
@@ -83,10 +89,19 @@ export default function TailoringAdminDashboard() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [busyId, setBusyId] = useState("");
+  const [isOnline, setIsOnline] = useState(true);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [referencePreviews, setReferencePreviews] = useState<Record<string, string>>({});
   const previewUrlsRef = useRef<string[]>([]);
+
+  useEffect(() => {
+    const updateOnline = () => setIsOnline(navigator.onLine);
+    updateOnline();
+    window.addEventListener("online", updateOnline);
+    window.addEventListener("offline", updateOnline);
+    return () => { window.removeEventListener("online", updateOnline); window.removeEventListener("offline", updateOnline); };
+  }, []);
 
   useEffect(() => {
     if (!hasFirebaseWebConfig) { setError("Firebase web configuration is missing. Admin data cannot be loaded."); return; }
@@ -103,6 +118,7 @@ export default function TailoringAdminDashboard() {
             batch.set(doc(db, "tailoringServices", item.id), { ...item, createdAt: now, updatedAt: now });
           }
           await batch.commit();
+          await confirmServerWrite();
         }
         if (stopped) return;
         stopServices = onSnapshot(collection(db, "tailoringServices"), data => {
@@ -142,6 +158,7 @@ export default function TailoringAdminDashboard() {
   async function saveService(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(""); setNotice("");
+    if (!isOnline) { setError("You appear to be offline. No service changes were confirmed; reconnect and try again."); return; }
     if (!serviceForm.name.trim() || !serviceForm.description.trim()) { setError("Add a service name and description."); return; }
     const price = moneyInput(serviceForm.illustrativePrice);
     if (serviceForm.illustrativePrice.trim() && price === null) { setError("Enter a non-negative illustrative price, or leave it blank."); return; }
@@ -160,18 +177,21 @@ export default function TailoringAdminDashboard() {
         illustrativePrice: price, imageUrl: serviceForm.imageUrl.trim(), active: serviceForm.active,
         sortOrder: Number(serviceForm.sortOrder) || 100, createdAt: existing?.createdAt || now, updatedAt: now
       });
+      await confirmServerWrite();
       setNotice(editingId ? "Service updated. Active customer catalogues will refresh automatically." : "Service created and available in the customer catalogue.");
       resetService();
-    } catch {
-      setError("The service could not be saved. Check your admin access and try again.");
+    } catch (cause) {
+      setError(cause instanceof Error && cause.message === "SERVER_ACK_TIMEOUT" ? "The server did not confirm this service change in time. Refresh before retrying to avoid duplicate edits." : "The service could not be saved. Check your admin access and try again.");
     } finally { setBusyId(""); }
   }
 
   async function removeService(item: ServiceRecord) {
+    if (!isOnline) { setError("You appear to be offline. No service deletion was confirmed."); return; }
     if (!window.confirm(`Delete “${item.name}” from the catalogue? Existing requests keep their saved service name.`)) return;
     setBusyId(item.id); setError(""); setNotice("");
     try {
       await deleteDoc(doc(db, "tailoringServices", item.id));
+      await confirmServerWrite();
       if (editingId === item.id) resetService();
       setNotice("Service deleted from the catalogue. Existing request history is unchanged.");
     } catch { setError("The service could not be deleted. Check your admin access and try again."); }
@@ -183,6 +203,7 @@ export default function TailoringAdminDashboard() {
   }
 
   async function saveRequest(item: RequestRecord) {
+    if (!isOnline) { setError("You appear to be offline. No request changes were confirmed; reconnect and retry."); return; }
     const draft = drafts[item.id] || requestDraft(item);
     const quoteAmount = moneyInput(draft.quoteAmount);
     const depositRequired = moneyInput(draft.depositRequired);
@@ -203,10 +224,11 @@ export default function TailoringAdminDashboard() {
         collectionMethod: draft.collectionMethod, adminNotes: draft.adminNotes.trim(),
         updatedAt: new Date().toISOString()
       });
+      await confirmServerWrite();
       setNotice(`Updated request ${item.id.slice(0, 8).toUpperCase()}.`);
       setDrafts(current => { const next = { ...current }; delete next[item.id]; return next; });
-    } catch {
-      setError("The request update was rejected. Confirm the values and current Firebase rules, then retry.");
+    } catch (cause) {
+      setError(cause instanceof Error && cause.message === "SERVER_ACK_TIMEOUT" ? "The server did not confirm this update in time. Refresh the request before retrying." : "The request update was rejected. Confirm the values and current Firebase rules, then retry.");
     } finally { setBusyId(""); }
   }
 
@@ -255,11 +277,11 @@ export default function TailoringAdminDashboard() {
             <label className="wide">Image URL (HTTPS, optional)<input type="url" value={serviceForm.imageUrl} onChange={e => setServiceForm(v => ({ ...v, imageUrl: e.target.value }))} placeholder="https://…" /></label>
             <label>Display order<input type="number" min="0" step="1" value={serviceForm.sortOrder} onChange={e => setServiceForm(v => ({ ...v, sortOrder: e.target.value }))} /></label>
             <label className="yusufAdminCheck"><input type="checkbox" checked={serviceForm.active} onChange={e => setServiceForm(v => ({ ...v, active: e.target.checked }))} /> Active in customer catalogue</label>
-            <div className="yusufAdminFormActions"><button type="submit" disabled={busyId === "service"}>{busyId === "service" ? "Saving…" : editingId ? "Save changes" : "Create service"}</button>{editingId && <button type="button" className="secondary" onClick={resetService}>Cancel edit</button>}</div>
+            <div className="yusufAdminFormActions"><button type="submit" disabled={busyId === "service" || !isOnline}>{busyId === "service" ? "Saving…" : editingId ? "Save changes" : "Create service"}</button>{editingId && <button type="button" className="secondary" onClick={resetService}>Cancel edit</button>}</div>
           </form>
           <div className="yusufAdminListHeading"><h3>Services</h3><span>{services.filter(item => item.active).length} active · {services.length} total</span></div>
           <div className="yusufAdminServiceList">
-            {services.map(item => <article key={item.id} className={!item.active ? "inactive" : ""}><div><strong>{item.name}</strong><small>{item.category} · {item.priceLabel}</small><p>{item.description}</p></div><div className="yusufAdminRowActions"><span>{item.active ? "Active" : "Inactive"}</span><button type="button" onClick={() => editService(item)}>Edit</button><button type="button" className="danger" disabled={busyId === item.id} onClick={() => void removeService(item)}>Delete</button></div></article>)}
+            {services.map(item => <article key={item.id} className={!item.active ? "inactive" : ""}><div><strong>{item.name}</strong><small>{item.category} · {item.priceLabel}</small><p>{item.description}</p></div><div className="yusufAdminRowActions"><span>{item.active ? "Active" : "Inactive"}</span><button type="button" onClick={() => editService(item)}>Edit</button><button type="button" className="danger" disabled={busyId === item.id || !isOnline} onClick={() => void removeService(item)}>Delete</button></div></article>)}
           </div>
         </section>
       ) : (
@@ -278,7 +300,7 @@ export default function TailoringAdminDashboard() {
                   {item.measurements && <p><b>Measurements</b>{item.measurements}</p>}
                   {item.needsFittingHelp && <p><b>Fitting</b>Customer requested measuring or fitting assistance{item.preferredFittingDate ? " · preferred " + item.preferredFittingDate : ""}</p>}
                   {item.notes && <p><b>Notes</b>{item.notes}</p>}
-                  {item.referenceImage && <div className="yusufAdminReference"><button type="button" onClick={() => void showReference(item)}>View private reference image</button>{referencePreviews[item.id] && <img src={referencePreviews[item.id]} alt={"Private reference for " + item.garmentType} />}</div>}
+                  {item.referenceImage && <div className="yusufAdminReference"><button type="button" disabled={!isOnline} onClick={() => void showReference(item)}>View private reference image</button>{referencePreviews[item.id] && <img src={referencePreviews[item.id]} alt={"Private reference for " + item.garmentType} />}</div>}
                 </div>
                 <div className="yusufAdminRequestFields">
                   <label>Status<select value={draft.status} onChange={e => patchDraft(item, { status: e.target.value })}>{item.status === "quote_accepted" && <option value="quote_accepted" disabled>Quote accepted by customer</option>}{statusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
@@ -294,7 +316,7 @@ export default function TailoringAdminDashboard() {
                   <label className="wide">Quote notes<textarea rows={2} maxLength={2000} value={draft.quoteNotes} onChange={e => patchDraft(item, { quoteNotes: e.target.value })} /></label>
                   <label className="wide">Internal admin notes<textarea rows={2} maxLength={3000} value={draft.adminNotes} onChange={e => patchDraft(item, { adminNotes: e.target.value })} /></label>
                 </div>
-                <div className="yusufAdminRequestFooter"><span>Last updated {new Date(item.updatedAt).toLocaleString()}</span><button type="button" disabled={busyId === item.id} onClick={() => void saveRequest(item)}>{busyId === item.id ? "Saving…" : "Save request updates"}</button></div>
+                <div className="yusufAdminRequestFooter"><span>Last updated {new Date(item.updatedAt).toLocaleString()}</span><button type="button" disabled={busyId === item.id || !isOnline} onClick={() => void saveRequest(item)}>{busyId === item.id ? "Saving…" : "Save request updates"}</button></div>
               </article>;
             })}
           </div>
