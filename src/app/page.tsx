@@ -1,11 +1,7 @@
 import Link from "next/link";
+import TailoringServiceCatalog from "@/components/TailoringServiceCatalog";
 
-const services = [
-  { number: "01", name: "Custom suits", detail: "Made-to-measure formalwear shaped around your fit, fabric and occasion.", price: "P1,600", note: "illustrative starting point", tone: "wine" },
-  { number: "02", name: "Wedding & occasion wear", detail: "A considered look for the day that matters, from first fitting to final adjustments.", price: "P1,800", note: "illustrative starting point", tone: "sand" },
-  { number: "03", name: "Unisex tailoring", detail: "Skirt suits, trouser suits and individual pieces designed around your preferences.", price: "P1,200", note: "illustrative starting point", tone: "olive" },
-  { number: "04", name: "Alterations & repairs", detail: "Hems, sleeves, waist adjustments and fit corrections for garments you already own.", price: "Quote after assessment", note: "depends on the garment and work", tone: "ink" }
-];
+
 
 export default function Home() {
   return (
@@ -62,21 +58,7 @@ export default function Home() {
           <div><p className="yusufEyebrow">THE SERVICE EDIT</p><h2>Start with<br /><em>what you need.</em></h2></div>
           <p>Choose a direction to get started. You can describe the garment, add a reference photo and ask for fitting help in your request.</p>
         </div>
-        <div className="yusufServiceGrid">
-          {services.map((service) => (
-            <article className={`yusufServiceCard ${service.tone}`} key={service.number}>
-              <div className="yusufServiceVisual" aria-hidden="true"><span>{service.number}</span><div className="yusufClothShape" /></div>
-              <div className="yusufServiceBody">
-                <div className="yusufServiceMeta"><span>TAILORING / {service.number}</span><span>BOTSWANA</span></div>
-                <h3>{service.name}</h3>
-                <p>{service.detail}</p>
-                <div className="yusufServicePrice"><strong>{service.price}</strong><small>{service.note}</small></div>
-                <Link href={`/request?service=${encodeURIComponent(service.name)}`} className="yusufServiceLink">Choose this service <span aria-hidden="true">↗</span></Link>
-              </div>
-            </article>
-          ))}
-        </div>
-        <p className="yusufPricingNotice">Price examples are placeholders for planning only, informed by publicly listed tailoring prices in Botswana. They are not Yusuf Clothing Line prices or a quotation. Final pricing depends on fabric, construction, measurements and scope and must be agreed before work begins.</p>
+        <TailoringServiceCatalog />
       </section>
 
       <section className="yusufProcess" id="process">
