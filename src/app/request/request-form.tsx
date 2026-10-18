@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { signInAnonymously } from "firebase/auth";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
 import { deleteObject, ref, uploadBytes } from "firebase/storage";
 import { auth, db, hasFirebaseWebConfig, storage } from "@/lib/firebase/client";
 
@@ -15,6 +15,7 @@ const serviceOptions = [
   "Shirts & trousers",
   "Alterations & repairs",
   "Uniforms & corporate wear",
+  "Corporate & uniform wear",
   "Other / not sure"
 ];
 
@@ -22,6 +23,7 @@ type ReferenceImage = { storagePath: string; name: string; type: string; size: n
 
 export default function RequestForm() {
   const [service, setService] = useState("");
+  const [availableServices, setAvailableServices] = useState<string[]>(serviceOptions);
   const [garmentType, setGarmentType] = useState("");
   const [stylePreferences, setStylePreferences] = useState("");
   const [fabricPreferences, setFabricPreferences] = useState("");
@@ -39,13 +41,20 @@ export default function RequestForm() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const requestedService = params.get("service") || "";
-    if (serviceOptions.includes(requestedService)) setService(requestedService);
-    else if (requestedService) {
-      setService("Other / not sure");
-      setNotes("Service or garment requested: " + requestedService);
+    const requestedService = (params.get("service") || "").slice(0, 120);
+    if (requestedService) {
+      setService(requestedService);
+      setAvailableServices(current => current.includes(requestedService) ? current : [...current, requestedService]);
     }
   }, []);
+
+  useEffect(() => {
+    if (!hasFirebaseWebConfig) return;
+    return onSnapshot(collection(db, "tailoringServices"), snapshot => {
+      const names = snapshot.docs.map(item => item.data()).filter(item => item.active === true && typeof item.name === "string").map(item => String(item.name).slice(0, 120));
+      setAvailableServices(current => [...new Set([...serviceOptions, ...names, service].filter(Boolean))]);
+    });
+  }, [service]);
 
   function chooseFile(next: File | null) {
     setError("");
@@ -166,7 +175,7 @@ export default function RequestForm() {
           <label>Service <span>*</span>
             <select required value={service} onChange={event => setService(event.target.value)}>
               <option value="">Choose a service</option>
-              {serviceOptions.map(option => <option key={option} value={option}>{option}</option>)}
+              {availableServices.map(option => <option key={option} value={option}>{option}</option>)}
             </select>
           </label>
           <label>Garment or alteration details <span>*</span>
