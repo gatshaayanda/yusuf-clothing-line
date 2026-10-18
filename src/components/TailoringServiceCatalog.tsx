@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db, hasFirebaseWebConfig } from "@/lib/firebase/client";
 
 type Service = {
@@ -33,16 +33,16 @@ export default function TailoringServiceCatalog() {
   useEffect(() => {
     if (!hasFirebaseWebConfig) return;
     return onSnapshot(
-      query(collection(db, "tailoringServices"), where("active", "==", true)),
+      collection(db, "tailoringServices"),
       snapshot => {
         const records = snapshot.docs.map(item => ({ id: item.id, ...item.data() as Omit<Service, "id"> }));
         records.sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name));
-        if (records.length) {
-          setServices(records);
-          setLive(true);
-        } else {
+        if (snapshot.empty) {
           setServices(placeholders);
           setLive(false);
+        } else {
+          setServices(records.filter(item => item.active));
+          setLive(true);
         }
       },
       () => {
@@ -54,7 +54,7 @@ export default function TailoringServiceCatalog() {
 
   return (
     <>
-      <div className="yusufServiceGrid">
+      {services.length === 0 && live ? <div className="yusufCatalogEmpty"><strong>The catalogue is being refreshed.</strong><p>Check back soon or start a request and describe what you need.</p><Link href="/request">Describe your tailoring request ↗</Link></div> : <div className="yusufServiceGrid">
         {services.map((service, index) => (
           <article className={`yusufServiceCard ${["wine", "sand", "olive", "ink"][index % 4]}`} key={service.id}>
             <div className="yusufServiceVisual" aria-hidden="true">
@@ -70,7 +70,7 @@ export default function TailoringServiceCatalog() {
             </div>
           </article>
         ))}
-      </div>
+      </div>}
       <p className="yusufPricingNotice">{live ? "Catalogue content is managed by Yusuf. A displayed guide price is not a quotation; final price and timing must be agreed before work is confirmed." : "Example catalogue content is shown while the business catalogue is being configured. Publicly listed Botswana tailoring prices informed these illustrative examples; they are not Yusuf Clothing Line prices or a quotation."}</p>
     </>
   );
