@@ -1,7 +1,7 @@
 name: Yusuf Clothing Line quality
 on:
   push:
-    branches: [main, "feat/**"]
+    branches: [main, "feat/**", "fix/**"]
   pull_request:
     branches: [main]
 permissions:
@@ -28,6 +28,8 @@ jobs:
         run: npm run verify:identity
       - name: Clone readiness
         run: npm run verify:clone-readiness
+      - name: Security boundary regression checks
+        run: npm run verify:security-boundaries
       - name: TypeScript
         run: npx tsc --noEmit
       - name: Lint
