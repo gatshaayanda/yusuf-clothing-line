@@ -71,7 +71,7 @@ export default function CustomerAccount() {
       setError("Your requests could not be loaded. Check your connection and try again.");
     });
     return () => stop();
-  }, [user?.uid]);
+  }, [user]);
 
   async function acceptQuote(item: CustomerRequest) {
     if (!user || busyId) return;
@@ -114,7 +114,7 @@ export default function CustomerAccount() {
             <div className="yusufAccountRequestMeta"><span>Submitted {new Date(item.createdAt).toLocaleDateString()}</span><span>Production: {stageLabels[item.productionStage] || item.productionStage}</span>{item.fittingDate && <span>Fitting: {item.fittingDate}</span>}{item.dueDate && <span>Due: {item.dueDate}</span>}</div>
             {item.quoteAmount != null && <div className="yusufAccountQuote"><div><small>QUOTATION</small><strong>P{item.quoteAmount.toLocaleString("en-BW", { maximumFractionDigits: 2 })}</strong></div><p>{item.quoteNotes || "Review the quoted amount and details before accepting."}</p></div>}
             {item.quoteStatus === "ready" && item.status === "quote_ready" && <div className="yusufAccountQuoteActions"><p>Accepting records your agreement to this quoted amount. The order is not confirmed until Yusuf confirms the next steps.</p><button type="button" disabled={busyId === item.id} onClick={() => void acceptQuote(item)}>{busyId === item.id ? "Recording acceptance…" : "Accept this quote"}</button></div>}
-            {item.quoteStatus === "accepted" && <p className="yusufAccountAccepted">Quote acceptance recorded{item.quoteAcceptedAmount != null ? " for P" + item.quoteAcceptedAmount.toLocaleString("en-BW", { maximumFractionDigits: 2 }) : ""}. Waiting for order confirmation.</p>}
+            {item.quoteStatus === "accepted" && <p className="yusufAccountAccepted">Quote acceptance recorded{item.quoteAcceptedAmount != null ? " for P" + item.quoteAcceptedAmount.toLocaleString("en-BW", { maximumFractionDigits: 2 }) : ""}. {item.status === "quote_accepted" ? "Waiting for order confirmation." : item.status === "cancelled" ? "This request is cancelled." : "Yusuf has recorded the next order status below."}</p>}
             {(item.depositRequired != null || item.depositPaid != null) && <div className="yusufAccountPayment"><span>Deposit required <strong>{item.depositRequired == null ? "Not set" : "P" + item.depositRequired.toLocaleString("en-BW")}</strong></span><span>Recorded as received <strong>{item.depositPaid == null ? "P0" : "P" + item.depositPaid.toLocaleString("en-BW")}</strong></span><span>Payment status <strong>{item.paymentStatus.replaceAll("_", " ")}</strong></span></div>}
             {item.collectionMethod && item.collectionMethod !== "not_set" && <p className="yusufAccountCollection">Collection / delivery: {item.collectionMethod}</p>}
           </article>
