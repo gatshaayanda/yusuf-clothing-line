@@ -14,7 +14,7 @@ WhatsApp is an optional supplementary contact channel. The normal customer journ
 
 1. Use the Node version specified in `.nvmrc`.
 2. Copy `.env.example` to `.env.local`; the public Firebase web configuration is prefilled for the dedicated `yusuf-clothing-line` project. The app deliberately refuses to initialize against other Firebase project identifiers.
-3. In Firebase Console, enable **Authentication → Anonymous** for guest request sessions. Configure a Firebase service-account JSON in `FIREBASE_ADMIN_KEY` and a new, strong `YUSUF_OPERATIONS_WORD` in a private local environment. The server-side service account is required for request submission, quote acceptance and operations sign-in. Never reuse another application's access word or service-account credentials.
+3. In Firebase Console, enable **Authentication → Anonymous** for guest request sessions and **Authentication → Email/Password** for cross-device account linking. Configure a Firebase service-account JSON in `FIREBASE_ADMIN_KEY` and a new, strong `YUSUF_OPERATIONS_WORD` in a private local environment. The server-side service account is required for request submission, quote acceptance and operations sign-in. Never reuse another application's access word or service-account credentials.
 4. Ensure the service-account JSON `project_id` is exactly `yusuf-clothing-line`. Firebase rules are source-controlled but are **not deployed automatically**; the repository's rules deployment workflow is manual-only.
 5. Run `npm ci`, then `npm run dev`. Do not commit `.env.local`, service-account JSON or other credentials.
 
