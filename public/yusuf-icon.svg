@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Yusuf Clothing Line tailoring mark</title>
+  <rect width="512" height="512" rx="112" fill="#F8F5F0"/>
+  <circle cx="256" cy="256" r="194" fill="none" stroke="#6B2636" stroke-width="12"/>
+  <path d="M176 128h42l70 256h-42z" fill="#6B2636"/>
+  <path d="M246 128h42l-70 256h-42z" fill="#B68B5E"/>
+  <path d="M148 178l216 156" fill="none" stroke="#6B2636" stroke-width="9" stroke-linecap="round" stroke-dasharray="3 14"/>
+  <path d="M145 151l32-32 31 31-32 32z" fill="#B68B5E"/>
+  <circle cx="177" cy="151" r="8" fill="#F8F5F0"/>
+  <path d="M295 353l67-67 22 22-67 67z" fill="#6B2636"/>
+  <path d="M352 278l22-22 24 24-22 22z" fill="#B68B5E"/>
+</svg>
