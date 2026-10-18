@@ -260,7 +260,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
           </div>
         ) : (
           <>
-            <div className="yusufInstallModalBenefits"><span><b>01</b><strong>Quick access</strong><small>Open Yusuf Clothing Line from your home screen.</small></span><span><b>02</b><strong>Your requests</strong><small>Return to your tailoring requests and updates.</small></span><span><b>03</b><strong>Private by account</strong><small>Keep your request details within your account.</small></span></div>
+            <div className="yusufInstallModalBenefits"><span><b>01</b><strong>Quick access</strong><small>Open Yusuf Clothing Line from your home screen.</small></span><span><b>02</b><strong>Your requests</strong><small>Return to your tailoring requests and updates.</small></span><span><b>03</b><strong>Private request history</strong><small>Return on this device to view your saved request history.</small></span></div>
             <button type="button" className="yusufInstallPrimary" onClick={() => void install()}>Install Yusuf Clothing Line →</button>
             <button type="button" className="yusufInstallSecondary" onClick={dismissInstall}>Not now</button>
           </>
