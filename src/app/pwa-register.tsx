@@ -11,9 +11,7 @@ type InstallPromptEvent = Event & {
 };
 type InstallState = "hidden" | "native" | "embedded";
 
-const APP_NAME = "Yusuf Clothing Line";
 const INSTALL_DISMISSED_KEY = "yusuf-clothing:install:dismissed-at";
-const INSTALL_DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
 
 function environment() {
   if (typeof window === "undefined") return { standalone: true, ios: false, android: false, embedded: false };
@@ -24,26 +22,6 @@ function environment() {
   const embedded = /WhatsApp|Instagram|FBAN|FBAV|Messenger|Line\/|Twitter|TikTok|Snapchat/i.test(ua) ||
     (/Android/i.test(ua) && /; wv\)/i.test(ua));
   return { standalone, ios, android, embedded };
-}
-
-function isIosSafari() {
-  if (typeof window === "undefined") return false;
-  const nav = window.navigator;
-  const ios = /iPad|iPhone|iPod/i.test(nav.userAgent) ||
-    (nav.platform === "MacIntel" && nav.maxTouchPoints > 1);
-  return ios && /Safari/i.test(nav.userAgent) && !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo/i.test(nav.userAgent);
-}
-
-function dismissedRecently() {
-  try {
-    const value = window.localStorage.getItem(INSTALL_DISMISSED_KEY);
-    if (!value) return false;
-    const at = Date.parse(value);
-    if (!Number.isFinite(at)) return false;
-    return Date.now() - at < INSTALL_DISMISS_MS;
-  } catch {
-    return false;
-  }
 }
 
 function rememberDismissal() {
