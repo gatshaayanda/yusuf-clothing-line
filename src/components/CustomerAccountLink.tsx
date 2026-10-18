@@ -73,6 +73,7 @@ export default function CustomerAccountLink({ user, requestsCount }: { user: Use
   }
 
   async function switchAccount() {
+    if (requestsCount > 0 && !window.confirm("Your requests will remain attached to this account. Switching only hides them until you sign back into this account; nothing will be deleted. Continue?")) return;
     setError(""); setMessage(""); setMode("signin");
     try { await signOut(auth); }
     catch { setError("We could not switch accounts right now. Please retry."); }
