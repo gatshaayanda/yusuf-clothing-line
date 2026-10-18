@@ -61,7 +61,7 @@ export default function RequestForm() {
     if (!next) { setFile(null); return; }
     if (!["image/jpeg", "image/png", "image/webp", "image/avif"].includes(next.type)) {
       setFile(null);
-      setError("Please choose an image file (JPG, PNG or WebP).");
+      setError("Please choose a JPG, PNG, WebP or AVIF image.");
       return;
     }
     if (next.size > 5 * 1024 * 1024) {
