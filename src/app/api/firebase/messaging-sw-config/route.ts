@@ -2,6 +2,11 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "yusuf-clothing-line"
+    || process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN !== "yusuf-clothing-line.firebaseapp.com"
+    || process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID !== "531992782883") {
+    return new Response("Yusuf Firebase messaging configuration is not available.", { status: 503, headers: { "Cache-Control": "no-store" } });
+  }
   const config = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",
