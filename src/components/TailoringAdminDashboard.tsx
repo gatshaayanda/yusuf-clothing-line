@@ -1,8 +1,10 @@
 "use client";
+/* eslint-disable @next/next/no-img-element -- reference images are private blob URLs and catalogue images are editable external URLs. */
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import {
-  collection, deleteDoc, doc, getDocs, onSnapshot, query, setDoc, updateDoc, waitForPendingWrites, writeBatch
+  collection, deleteDoc, doc, getDocs, onSnapshot, setDoc, updateDoc, waitForPendingWrites, writeBatch
 } from "firebase/firestore";
 import { auth, db, hasFirebaseWebConfig } from "@/lib/firebase/client";
 
@@ -259,7 +261,7 @@ export default function TailoringAdminDashboard() {
   return (
     <main className="yusufAdminPage">
       <header className="yusufAdminHeader">
-        <div><a href="/" className="yusufFooterBrand">YUSUF <span>CLOTHING LINE</span></a><p className="yusufEyebrow">BUSINESS WORKSPACE</p><h1>Made-to-measure<br /><em>operations.</em></h1></div>
+        <div><Link href="/" className="yusufFooterBrand">YUSUF <span>CLOTHING LINE</span></Link><p className="yusufEyebrow">BUSINESS WORKSPACE</p><h1>Made-to-measure<br /><em>operations.</em></h1></div>
         <div className="yusufAdminHeaderNote"><strong>Keep every detail together.</strong><span>Requests, quotations, fittings and production updates stay in the app.</span></div>
       </header>
       <div className="yusufAdminStats">
@@ -332,7 +334,7 @@ export default function TailoringAdminDashboard() {
           </div>
         </section>
       )}
-      <footer className="yusufAdminFooter"><span>Yusuf Clothing Line · Private business workspace</span><a href="/">View customer storefront ↗</a></footer>
+      <footer className="yusufAdminFooter"><span>Yusuf Clothing Line · Private business workspace</span><Link href="/">View customer storefront ↗</Link></footer>
     </main>
   );
 }
