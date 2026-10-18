@@ -1,7 +1,7 @@
-name: The Plug quality
+name: Yusuf Clothing Line quality
 on:
   push:
-    branches: [main]
+    branches: [main, "feat/**"]
   pull_request:
     branches: [main]
 permissions:
