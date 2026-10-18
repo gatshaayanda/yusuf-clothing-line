@@ -508,13 +508,14 @@ service cloud.firestore {
           && (request.resource.data.illustrativePrice == null
             || (request.resource.data.illustrativePrice is number && request.resource.data.illustrativePrice >= 0))
           && request.resource.data.imageUrl is string
+          && (request.resource.data.imageUrl == '' || request.resource.data.imageUrl.matches('https://.*'))
           && request.resource.data.active is bool
           && request.resource.data.sortOrder is number
           && request.resource.data.createdAt is string
           && request.resource.data.updatedAt is string;
       }
 
-      allow read: if isAdmin() || resource.data.active == true;
+      allow read: if true; // Catalogue records contain public service information only.
       allow create: if isAdmin() && validTailoringService();
       allow update: if isAdmin() && validTailoringService();
       // Requests store service name/price snapshots, so removing a service cannot rewrite history.
@@ -592,29 +593,32 @@ service cloud.firestore {
 
       function validAdminRequestUpdate() {
         return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'status', 'quoteStatus', 'quoteAmount', 'quoteNotes', 'quoteAcceptedAt',
-            'quoteAcceptedAmount', 'depositRequired', 'depositPaid', 'paymentStatus',
+            'status', 'quoteStatus', 'quoteAmount', 'quoteNotes',
+            'depositRequired', 'depositPaid', 'paymentStatus',
             'productionStage', 'fittingDate', 'dueDate', 'collectionMethod',
             'adminNotes', 'completedAt', 'collectedAt', 'updatedAt'
           ])
           && request.resource.data.status in [
-            'new', 'reviewing', 'awaiting_customer', 'quote_ready', 'quote_accepted',
+            'new', 'reviewing', 'awaiting_customer', 'quote_ready',
             'confirmed', 'in_production', 'ready_for_fitting', 'alterations',
             'ready_for_collection', 'completed', 'collected', 'cancelled'
           ]
-          && request.resource.data.quoteStatus in ['not_quoted', 'ready', 'accepted', 'declined']
+          && request.resource.data.quoteStatus in ['not_quoted', 'ready', 'declined']
           && request.resource.data.paymentStatus in ['unpaid', 'deposit_pending', 'partially_paid', 'paid', 'refunded']
           && request.resource.data.productionStage in [
             'not_started', 'awaiting_fabric', 'cutting', 'sewing', 'fitting',
             'alterations', 'quality_check', 'ready_for_collection', 'collected', 'cancelled'
           ]
           && (!request.resource.data.keys().hasAny(['quoteAmount'])
+            || request.resource.data.quoteAmount == null
             || (request.resource.data.quoteAmount is number && request.resource.data.quoteAmount >= 0))
           && (!request.resource.data.keys().hasAny(['quoteAcceptedAmount'])
             || (request.resource.data.quoteAcceptedAmount is number && request.resource.data.quoteAcceptedAmount >= 0))
           && (!request.resource.data.keys().hasAny(['depositRequired'])
+            || request.resource.data.depositRequired == null
             || (request.resource.data.depositRequired is number && request.resource.data.depositRequired >= 0))
           && (!request.resource.data.keys().hasAny(['depositPaid'])
+            || request.resource.data.depositPaid == null
             || (request.resource.data.depositPaid is number && request.resource.data.depositPaid >= 0))
           && (!request.resource.data.keys().hasAny(['quoteNotes']) || request.resource.data.quoteNotes is string)
           && (!request.resource.data.keys().hasAny(['adminNotes']) || request.resource.data.adminNotes is string)
