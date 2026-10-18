@@ -94,6 +94,21 @@
       "path": "scripts/identity.config.json",
       "pattern": "#0866FF",
       "reason": "This exact inherited identity/resource is listed as forbidden by the verifier configuration, not used by runtime code."
+    },
+    {
+      "path": "scripts/verify-clone-readiness.mjs",
+      "pattern": "plug-icon.svg",
+      "reason": "The readiness gate explicitly asserts that this inherited asset is absent from the repository."
+    },
+    {
+      "path": "scripts/verify-clone-readiness.mjs",
+      "pattern": "plug-icon-192.png",
+      "reason": "The readiness gate explicitly asserts that this inherited asset is absent from the repository."
+    },
+    {
+      "path": "scripts/verify-clone-readiness.mjs",
+      "pattern": "plug-icon-512.png",
+      "reason": "The readiness gate explicitly asserts that this inherited asset is absent from the repository."
     }
   ]
 }
