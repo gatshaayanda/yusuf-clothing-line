@@ -20,7 +20,7 @@ function walk(dir) {
     if (ignoredDirs.has(entry.name)) continue;
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) files.push(...walk(full));
-    else if (textExtensions.has(path.extname(entry.name).toLowerCase())) files.push(full);
+    else if (textExtensions.has(path.extname(entry.name).toLowerCase()) || entry.name === ".env.example") files.push(full);
   }
   return files;
 }
