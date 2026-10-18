@@ -38,6 +38,7 @@ check("Storage rules keep customer reference paths private", /match \/tailoringR
 check("Admin bootstrap uses Yusuf-only project and secret names", /YUSUF_OPERATIONS_WORD/.test(read("src/app/api/operations-login/route.ts")) && /yusuf-clothing-line/.test(read("src/app/api/operations-login/route.ts")));
 check("Firebase rule deployment is manual-only and target-guarded", /workflow_dispatch/.test(read(".github/workflows/firebase-rules-deploy.yml")) && !/^\s*push:/m.test(read(".github/workflows/firebase-rules-deploy.yml")) && /yusuf-clothing-line/.test(read(".github/workflows/firebase-rules-deploy.yml")));
 check("Inherited scheduled production reminder workflow is absent", !exists(".github/workflows/pickup-reminders.yml"));
+check("Inherited app icons are absent", !exists("public/plug-icon.svg") && !exists("public/plug-icon-192.png") && !exists("public/plug-icon-512.png"));
 check("Legacy sourcing and UploadThing APIs are removed", !exists("src/app/api/sourcing-request/route.ts") && !exists("src/app/api/sourcing-request/approve-quote/route.ts") && !exists("src/app/api/uploadthing/route.ts"));
 check("No committed Firebase private key material", !/-----BEGIN PRIVATE KEY-----/.test(read("README.md")) && !/-----BEGIN PRIVATE KEY-----/.test(read(".env.example")));
 
