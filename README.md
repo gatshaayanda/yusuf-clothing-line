@@ -13,9 +13,10 @@ WhatsApp is an optional supplementary contact channel. The normal customer journ
 ## Local setup
 
 1. Use the Node version specified in `.nvmrc`.
-2. Copy `.env.example` to `.env.local`; the public Firebase web configuration is prefilled for the dedicated `yusuf-clothing-line` project.
-3. Configure server credentials only for integrations actually retained. Never commit `.env.local`, service-account JSON or provider tokens.
-4. Run `npm ci`, then `npm run dev`.
+2. Copy `.env.example` to `.env.local`; the public Firebase web configuration is prefilled for the dedicated `yusuf-clothing-line` project. The app deliberately refuses to initialize against other Firebase project identifiers.
+3. In Firebase Console, enable **Authentication → Anonymous** for guest request sessions. Configure a Firebase service-account JSON in `FIREBASE_ADMIN_KEY` and a new, strong `YUSUF_OPERATIONS_WORD` only in a private local environment when you need the admin workspace. Never reuse The Plug's operations word or service-account credentials.
+4. Ensure the service-account JSON `project_id` is exactly `yusuf-clothing-line`. Firebase rules are source-controlled but are **not deployed automatically**; the repository's rules deployment workflow is manual-only.
+5. Run `npm ci`, then `npm run dev`. Do not commit `.env.local`, service-account JSON or other credentials.
 
 ## Verification
 
@@ -29,7 +30,7 @@ npm run build
 git diff --check
 ```
 
-A successful build proves only the checks it actually runs. It does not prove Firebase rules are deployed, data persists in the intended project, uploads work, push notifications arrive, or PWA installation/offline behavior works on devices.
+A successful build proves only the checks it actually runs. It does not prove Firebase rules are deployed, anonymous authentication is enabled, data persists in the intended project, private image uploads work, push notifications arrive, or PWA installation/offline behavior works on devices.
 
 ## Current implementation boundary
 
