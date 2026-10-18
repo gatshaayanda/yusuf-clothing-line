@@ -11,8 +11,6 @@ type InstallPromptEvent = Event & {
 };
 type InstallState = "hidden" | "native" | "embedded";
 
-const INSTALL_DISMISSED_KEY = "yusuf-clothing:install:dismissed-at";
-
 function environment() {
   if (typeof window === "undefined") return { standalone: true, ios: false, android: false, embedded: false };
   const ua = navigator.userAgent || "";
@@ -22,18 +20,6 @@ function environment() {
   const embedded = /WhatsApp|Instagram|FBAN|FBAV|Messenger|Line\/|Twitter|TikTok|Snapchat/i.test(ua) ||
     (/Android/i.test(ua) && /; wv\)/i.test(ua));
   return { standalone, ios, android, embedded };
-}
-
-function rememberDismissal() {
-  try {
-    window.localStorage.setItem(INSTALL_DISMISSED_KEY, new Date().toISOString());
-  } catch {
-    // Installation remains optional when storage is unavailable.
-  }
-}
-
-function clearDismissal() {
-  try { window.localStorage.removeItem(INSTALL_DISMISSED_KEY); } catch {}
 }
 
 export default function PwaRegister({ initialEmbedded = false, initialAndroid = false }: { initialEmbedded?: boolean; initialAndroid?: boolean }) {
@@ -120,7 +106,6 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
       installPromptRef.current = null;
       setInstallHelpOpen(false);
       setInstallState("hidden");
-      clearDismissal();
     };
     window.addEventListener("yusuf-open-install", requestInstall);
     window.addEventListener("appinstalled", appInstalled);
@@ -202,8 +187,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
     }
     try {
       await prompt.prompt();
-      const choice = await prompt.userChoice;
-      if (choice.outcome === "dismissed") rememberDismissal();
+      await prompt.userChoice;
     } catch {
       // The event is one-shot and browser-controlled. Do not replace it with
       // generic Chrome-menu instructions when the native prompt fails.
@@ -215,7 +199,6 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
   }
 
   function dismissInstall() {
-    rememberDismissal();
     setInstallHelpOpen(false);
     setInstallState("hidden");
   }
@@ -246,15 +229,15 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
     }, 1800);
   }
 
-  const installShellStyle: CSSProperties = { position: "fixed", left: 16, right: 16, bottom: 16, zIndex: 1000, maxWidth: 720, margin: "0 auto", padding: 16, borderRadius: 18, background: "#FFFFFF", color: "#111318", boxShadow: "0 12px 40px rgba(0,0,0,.18)", border: "1px solid rgba(17,19,24,.12)" };
+  const installShellStyle: CSSProperties = { position: "fixed", left: 16, right: 16, bottom: 16, zIndex: 1000, maxWidth: 720, margin: "0 auto", padding: 16, borderRadius: 18, background: "#F8F5F0", color: "#24201F", boxShadow: "0 12px 40px rgba(30,10,18,.18)", border: "1px solid #e2d8cf" };
   const embeddedInstallStyle: CSSProperties = { position: "fixed", inset: 0, zIndex: 2147483647, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.82)", backdropFilter: "blur(4px)", overscrollBehavior: "contain" };
   const installCard = installState === "native" ? (
     <div style={installShellStyle} role="presentation">
-      <section className="yusufInstallModal" role="dialog" aria-modal="false" aria-labelledby="yusuf-install-title" aria-describedby="yusuf-install-message">
+      <section className="yusufInstallModal" role="dialog" aria-modal="true" aria-labelledby="yusuf-install-title" aria-describedby="yusuf-install-message">
         <div className="yusufInstallTop"><span className="yusufInstallMark">Y</span><span className="yusufInstallTag">YUSUF CLOTHING LINE · BOTSWANA</span><button type="button" className="yusufInstallClose" aria-label="Close install prompt" onClick={dismissInstall}>×</button></div>
         <div className="yusufInstallKicker">YOUR TAILORING STUDIO</div>
         <h2 id="yusuf-install-title">Yusuf Clothing Line.<br/><em>One tap away.</em></h2>
-        <p id="yusuf-install-message">Install Yusuf Clothing Line on your device for a direct home-screen shortcut to your sourcing requests, account and private conversations with Frank.</p>
+        <p id="yusuf-install-message">Install Yusuf Clothing Line on your device for a direct home-screen shortcut to your tailoring requests, quotations and recorded progress.</p>
         {installHelpOpen ? (
           <div className="yusufInstallSteps" role="status" aria-live="polite">
             {installPlatform === "ios" ? (
@@ -286,11 +269,11 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
       </section>
     </div>
   ) : installState === "embedded" ? (
-    <div style={embeddedInstallStyle} role="alertdialog" aria-modal="true" aria-labelledby="plug-embedded-title" aria-describedby="plug-embedded-message">
+    <div style={embeddedInstallStyle} role="alertdialog" aria-modal="true" aria-labelledby="yusuf-embedded-title" aria-describedby="yusuf-embedded-message">
       <div className="pwaInstallInfo" style={{...installShellStyle, position: "relative", left: "auto", right: "auto", bottom: "auto", width: "100%", maxWidth: 520, margin: 0}}>
         <div>
-          <strong id="plug-embedded-title"><span aria-hidden="true">🌐 </span>OPEN YUSUF CLOTHING LINE IN YOUR BROWSER</strong>
-          <span id="plug-embedded-message">{embeddedAndroid ? <>Tap below to open Yusuf Clothing Line in Chrome. Then open the <b>⋮ menu</b> and choose <b>Install app</b>.</> : <>Yusuf Clothing Line opened inside another app. Use that app’s menu to open this page in your browser, then look for <b>Install app</b> in the browser menu.</>}</span>
+          <strong id="yusuf-embedded-title"><span aria-hidden="true">🌐 </span>OPEN YUSUF CLOTHING LINE IN YOUR BROWSER</strong>
+          <span id="yusuf-embedded-message">{embeddedAndroid ? <>Tap below to open Yusuf Clothing Line in Chrome. Then open the <b>⋮ menu</b> and choose <b>Install app</b>.</> : <>Yusuf Clothing Line opened inside another app. Use that app’s menu to open this page in your browser, then look for <b>Install app</b> in the browser menu.</>}</span>
         </div>
         <div className="pwaInstallActions" style={{display:"flex",justifyContent:"flex-end"}}>
           <button ref={embeddedActionRef} type="button" style={{background:"#6B2636",color:"#fff"}} onClick={openBrowser}>{embeddedAndroid ? "OPEN IN CHROME" : "OPEN IN BROWSER"}</button>
