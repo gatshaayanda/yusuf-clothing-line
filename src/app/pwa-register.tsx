@@ -131,7 +131,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
         void install();
         return;
       }
-      // Match the working Odi install flow: never let a visible install CTA silently
+      // Match the working the native-install pattern: never let a visible install CTA silently
       // do nothing when this browser has not emitted beforeinstallprompt.
       const platform = current.ios ? "ios" : current.android ? "android" : "other";
       setInstallPlatform(platform);
@@ -187,7 +187,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
     const previousOverflow = document.body.style.overflow;
     if (isEmbeddedGate) document.body.style.overflow = "hidden";
     if (installState === "embedded") embeddedActionRef.current?.focus();
-    else document.querySelector<HTMLButtonElement>(".plugInstallPrimary")?.focus();
+    else document.querySelector<HTMLButtonElement>(".yusufInstallPrimary")?.focus();
 
     const keepDialogFocused = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -215,7 +215,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
     const prompt = installPromptRef.current;
     if (!prompt) {
       // Native install events are browser-controlled. Show the same explicit
-      // platform-specific fallback as Odi rather than silently returning.
+      // platform-specific fallback rather than silently returning.
       const env = environment();
       setInstallPlatform(env.ios ? "ios" : env.android ? "android" : "other");
       setInstallHelpOpen(true);
@@ -272,13 +272,13 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
   const embeddedInstallStyle: CSSProperties = { position: "fixed", inset: 0, zIndex: 2147483647, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.82)", backdropFilter: "blur(4px)", overscrollBehavior: "contain" };
   const installCard = installState === "native" ? (
     <div style={installShellStyle} role="presentation">
-      <section className="plugInstallModal" role="dialog" aria-modal="false" aria-labelledby="plug-install-title" aria-describedby="plug-install-message">
-        <div className="plugInstallTop"><span className="plugInstallMark">P</span><span className="plugInstallTag">YUSUF CLOTHING LINE · BOTSWANA</span><button type="button" className="plugInstallClose" aria-label="Close install prompt" onClick={dismissInstall}>×</button></div>
-        <div className="plugInstallKicker">YOUR SOURCING APP</div>
+      <section className="yusufInstallModal" role="dialog" aria-modal="false" aria-labelledby="plug-install-title" aria-describedby="plug-install-message">
+        <div className="yusufInstallTop"><span className="yusufInstallMark">P</span><span className="yusufInstallTag">YUSUF CLOTHING LINE · BOTSWANA</span><button type="button" className="yusufInstallClose" aria-label="Close install prompt" onClick={dismissInstall}>×</button></div>
+        <div className="yusufInstallKicker">YOUR SOURCING APP</div>
         <h2 id="plug-install-title">Yusuf Clothing Line.<br/><em>One tap away.</em></h2>
         <p id="plug-install-message">Install Yusuf Clothing Line on your device for a direct home-screen shortcut to your sourcing requests, account and private conversations with Frank.</p>
         {installHelpOpen ? (
-          <div className="plugInstallSteps" role="status" aria-live="polite">
+          <div className="yusufInstallSteps" role="status" aria-live="polite">
             {installPlatform === "ios" ? (
               <>
                 <strong>Add Yusuf Clothing Line from Safari</strong>
@@ -295,16 +295,16 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
                 <p>In Chrome or Edge, open the browser menu and choose <b>Install Yusuf Clothing Line</b> or <b>Install page as app</b>, if offered.</p>
               </>
             )}
-            <button type="button" className="plugInstallPrimary" onClick={dismissInstall}>Got it</button>
+            <button type="button" className="yusufInstallPrimary" onClick={dismissInstall}>Got it</button>
           </div>
         ) : (
           <>
-            <div className="plugInstallModalBenefits"><span><b>01</b><strong>Quick access</strong><small>Open Yusuf Clothing Line from your home screen.</small></span><span><b>02</b><strong>Your requests</strong><small>Return to your sourcing journey and account.</small></span><span><b>03</b><strong>Private by account</strong><small>Keep your conversations in your member space.</small></span></div>
-            <button type="button" className="plugInstallPrimary" onClick={() => void install()}>Install Yusuf Clothing Line →</button>
-            <button type="button" className="plugInstallSecondary" onClick={dismissInstall}>Not now</button>
+            <div className="yusufInstallModalBenefits"><span><b>01</b><strong>Quick access</strong><small>Open Yusuf Clothing Line from your home screen.</small></span><span><b>02</b><strong>Your requests</strong><small>Return to your sourcing journey and account.</small></span><span><b>03</b><strong>Private by account</strong><small>Keep your conversations in your member space.</small></span></div>
+            <button type="button" className="yusufInstallPrimary" onClick={() => void install()}>Install Yusuf Clothing Line →</button>
+            <button type="button" className="yusufInstallSecondary" onClick={dismissInstall}>Not now</button>
           </>
         )}
-        <p className="plugInstallFootnote">No app-store search needed. Your browser will guide the installation.</p>
+        <p className="yusufInstallFootnote">No app-store search needed. Your browser will guide the installation.</p>
       </section>
     </div>
   ) : installState === "embedded" ? (
@@ -327,7 +327,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
     {!environment().standalone && installState !== "embedded" && (
       <button
         type="button"
-        className="plugPwaInstallButton"
+        className="yusufPwaInstallButton"
         onClick={() => {
           if (installPromptRef.current) {
             void install();
