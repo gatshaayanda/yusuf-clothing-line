@@ -18,9 +18,9 @@ type Service = {
 };
 
 const placeholders: Service[] = [
-  { id: "custom-suits", name: "Custom suits", category: "Made to measure", description: "Formalwear shaped around your fit, fabric and occasion.", priceLabel: "Illustrative from P1,600", illustrativePrice: 1600, imageUrl: "", active: true, sortOrder: 10 },
-  { id: "wedding-occasion-wear", name: "Wedding & occasion wear", category: "Occasion", description: "A considered look for the day that matters, from first fitting to final adjustments.", priceLabel: "Illustrative from P1,800", illustrativePrice: 1800, imageUrl: "", active: true, sortOrder: 20 },
-  { id: "unisex-tailoring", name: "Unisex tailoring", category: "Made to measure", description: "Skirt suits, trouser suits and individual pieces designed around your preferences.", priceLabel: "Illustrative from P1,200", illustrativePrice: 1200, imageUrl: "", active: true, sortOrder: 30 },
+  { id: "custom-suits", name: "Custom suits", category: "Made to measure", description: "Formalwear shaped around your fit, fabric and occasion.", priceLabel: "Illustrative from P8,000", illustrativePrice: 8000, imageUrl: "", active: true, sortOrder: 10 },
+  { id: "wedding-occasion-wear", name: "Wedding & occasion wear", category: "Occasion", description: "A considered look for the day that matters, from first fitting to final adjustments.", priceLabel: "Quote after consultation", illustrativePrice: null, imageUrl: "", active: true, sortOrder: 20 },
+  { id: "unisex-tailoring", name: "Unisex tailoring", category: "Made to measure", description: "Skirt suits, trouser suits and individual pieces designed around your preferences.", priceLabel: "Quote after consultation", illustrativePrice: null, imageUrl: "", active: true, sortOrder: 30 },
   { id: "alterations-repairs", name: "Alterations & repairs", category: "Alterations", description: "Hems, sleeves, waist adjustments and fit corrections for garments you already own.", priceLabel: "Quote after assessment", illustrativePrice: null, imageUrl: "", active: true, sortOrder: 40 },
   { id: "dresses-skirts", name: "Dresses & skirts", category: "Garments", description: "Made-to-measure dresses and skirts with your preferred silhouette and finishing.", priceLabel: "Quote after consultation", illustrativePrice: null, imageUrl: "", active: true, sortOrder: 50 },
   { id: "corporate-wear", name: "Corporate & uniform wear", category: "Teams", description: "Discuss consistent fit, fabric and quantities for workwear or team uniforms.", priceLabel: "Quote by brief", illustrativePrice: null, imageUrl: "", active: true, sortOrder: 60 }
@@ -71,7 +71,7 @@ export default function TailoringServiceCatalog() {
           </article>
         ))}
       </div>}
-      <p className="yusufPricingNotice">{live ? "Catalogue content is managed by Yusuf. A displayed guide price is not a quotation; final price and timing must be agreed before work is confirmed." : "Example catalogue content is shown while the business catalogue is being configured. Publicly listed Botswana tailoring prices informed these illustrative examples; they are not Yusuf Clothing Line prices or a quotation."}</p>
+      <p className="yusufPricingNotice">{live ? "Catalogue content is managed by Yusuf. A displayed guide price is not a quotation; final price and timing must be agreed before work is confirmed." : "Example catalogue content is shown while the business catalogue is being configured. Any price shown is a clearly labelled illustration until Yusuf confirms the catalogue; no public listing verifies Yusuf Clothing Line prices."}</p>
     </>
   );
 }
