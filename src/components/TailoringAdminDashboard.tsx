@@ -4,8 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   collection, deleteDoc, doc, getDocs, onSnapshot, query, setDoc, updateDoc, waitForPendingWrites, writeBatch
 } from "firebase/firestore";
-import { getBlob, ref } from "firebase/storage";
-import { db, hasFirebaseWebConfig, storage } from "@/lib/firebase/client";
+import { auth, db, hasFirebaseWebConfig } from "@/lib/firebase/client";
 
 type ServiceRecord = {
   id: string; name: string; category: string; description: string; priceLabel: string;
@@ -237,11 +236,22 @@ export default function TailoringAdminDashboard() {
     if (!path || referencePreviews[item.id]) return;
     setError("");
     try {
-      const blob = await getBlob(ref(storage, path));
+      const currentUser = auth.currentUser;
+      if (!currentUser) throw new Error("Sign in again to view private reference images.");
+      const token = await currentUser.getIdToken();
+      const response = await fetch("/api/tailoring-request/reference-image?requestId=" + encodeURIComponent(item.id), {
+        headers: { Authorization: "Bearer " + token },
+        cache: "no-store"
+      });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({})) as { error?: string };
+        throw new Error(payload.error || "The private reference image could not be retrieved.");
+      }
+      const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       previewUrlsRef.current.push(url);
       setReferencePreviews(current => ({ ...current, [item.id]: url }));
-    } catch { setError("The reference image could not be retrieved with this admin session."); }
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "The reference image could not be retrieved with this admin session."); }
   }
 
   const count = (status: string) => requests.filter(item => item.status === status).length;
