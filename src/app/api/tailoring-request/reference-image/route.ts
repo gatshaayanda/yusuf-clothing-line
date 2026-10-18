@@ -55,7 +55,9 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "The stored reference image failed its security checks." }, { status: 403 });
     }
     const [bytes] = await file.download();
-    return new Response(bytes, {
+    const responseBody = new ArrayBuffer(bytes.byteLength);
+    new Uint8Array(responseBody).set(bytes);
+    return new Response(responseBody, {
       headers: {
         "Content-Type": contentType,
         "Content-Length": String(bytes.byteLength),
