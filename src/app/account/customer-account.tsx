@@ -121,7 +121,7 @@ export default function CustomerAccount() {
           </article>
         ))}
       </section>
-      <CustomerAccountLink user={user} requestsCount={requests.length} />
+      {user && <CustomerAccountLink user={user} requestsCount={requests.length} />}
       <footer className="yusufAccountFooter"><Link href="/">Back to the studio</Link><span>Requests are not confirmed orders until the business records confirmation.</span></footer>
     </main>
   );
