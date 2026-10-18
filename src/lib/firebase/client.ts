@@ -41,7 +41,7 @@ const firebaseConfig = hasFirebaseWebConfig
       measurementId: undefined,
     };
 
-const app = getApps().length ? getApps().find(candidate => candidate.options.projectId === firebaseConfig.projectId) || initializeApp(firebaseConfig) : initializeApp(firebaseConfig);
+const app = getApps().length ? getApps().find(candidate => candidate.options.projectId === firebaseConfig.projectId) || initializeApp(firebaseConfig, "yusuf-clothing-line-client") : initializeApp(firebaseConfig, "yusuf-clothing-line-client");
 
 export const auth = getAuth(app);
 export const db = initializeFirestore(app, {
