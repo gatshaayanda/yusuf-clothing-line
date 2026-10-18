@@ -21,3 +21,5 @@
 .yusufInstallSecondary{background:transparent;color:#6B2636;margin-top:9px}
 .yusufInstallModalBenefits{border-top:1px solid #e2d8cf;padding-top:14px;margin-top:18px;font-size:.73rem;color:#6D6561;line-height:1.65}
 .yusufInstallFootnote{font-size:.66rem!important;color:#7c7068!important;margin-top:15px}
+
+.yusufPwaUpdateButton{border:0;background:#6B2636;color:#fff;padding:10px 14px;font-size:.76rem;font-weight:800;cursor:pointer;white-space:nowrap}
