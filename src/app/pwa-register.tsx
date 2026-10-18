@@ -272,11 +272,11 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
   const embeddedInstallStyle: CSSProperties = { position: "fixed", inset: 0, zIndex: 2147483647, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.82)", backdropFilter: "blur(4px)", overscrollBehavior: "contain" };
   const installCard = installState === "native" ? (
     <div style={installShellStyle} role="presentation">
-      <section className="yusufInstallModal" role="dialog" aria-modal="false" aria-labelledby="plug-install-title" aria-describedby="plug-install-message">
-        <div className="yusufInstallTop"><span className="yusufInstallMark">P</span><span className="yusufInstallTag">YUSUF CLOTHING LINE · BOTSWANA</span><button type="button" className="yusufInstallClose" aria-label="Close install prompt" onClick={dismissInstall}>×</button></div>
-        <div className="yusufInstallKicker">YOUR SOURCING APP</div>
-        <h2 id="plug-install-title">Yusuf Clothing Line.<br/><em>One tap away.</em></h2>
-        <p id="plug-install-message">Install Yusuf Clothing Line on your device for a direct home-screen shortcut to your sourcing requests, account and private conversations with Frank.</p>
+      <section className="yusufInstallModal" role="dialog" aria-modal="false" aria-labelledby="yusuf-install-title" aria-describedby="yusuf-install-message">
+        <div className="yusufInstallTop"><span className="yusufInstallMark">Y</span><span className="yusufInstallTag">YUSUF CLOTHING LINE · BOTSWANA</span><button type="button" className="yusufInstallClose" aria-label="Close install prompt" onClick={dismissInstall}>×</button></div>
+        <div className="yusufInstallKicker">YOUR TAILORING STUDIO</div>
+        <h2 id="yusuf-install-title">Yusuf Clothing Line.<br/><em>One tap away.</em></h2>
+        <p id="yusuf-install-message">Install Yusuf Clothing Line on your device for a direct home-screen shortcut to your sourcing requests, account and private conversations with Frank.</p>
         {installHelpOpen ? (
           <div className="yusufInstallSteps" role="status" aria-live="polite">
             {installPlatform === "ios" ? (
@@ -299,7 +299,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
           </div>
         ) : (
           <>
-            <div className="yusufInstallModalBenefits"><span><b>01</b><strong>Quick access</strong><small>Open Yusuf Clothing Line from your home screen.</small></span><span><b>02</b><strong>Your requests</strong><small>Return to your sourcing journey and account.</small></span><span><b>03</b><strong>Private by account</strong><small>Keep your conversations in your member space.</small></span></div>
+            <div className="yusufInstallModalBenefits"><span><b>01</b><strong>Quick access</strong><small>Open Yusuf Clothing Line from your home screen.</small></span><span><b>02</b><strong>Your requests</strong><small>Return to your tailoring requests and updates.</small></span><span><b>03</b><strong>Private by account</strong><small>Keep your request details within your account.</small></span></div>
             <button type="button" className="yusufInstallPrimary" onClick={() => void install()}>Install Yusuf Clothing Line →</button>
             <button type="button" className="yusufInstallSecondary" onClick={dismissInstall}>Not now</button>
           </>
@@ -343,6 +343,6 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
       </button>
     )}
     {installCard}
-    {updateReady && <div className="pwaUpdate" role="status" aria-live="polite"><div><strong>Yusuf Clothing Line update is ready</strong><span>Refresh when you are ready.</span></div><button type="button" className="button buttonPrimary" onClick={applyUpdate}>Refresh</button></div>}
+    {updateReady && <div className="pwaUpdate" role="status" aria-live="polite"><div><strong>Yusuf Clothing Line update is ready</strong><span>Refresh when you are ready.</span></div><button type="button" className="yusufPwaUpdateButton" onClick={applyUpdate}>Refresh</button></div>}
   </>;
 }
