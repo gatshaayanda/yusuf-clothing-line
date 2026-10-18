@@ -32,6 +32,24 @@ function isString(value: unknown, max: number, required = false): value is strin
 }
 function clean(value: string) { return value.trim(); }
 
+function botswanaToday() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Africa/Gaborone", year: "numeric", month: "2-digit", day: "2-digit"
+  }).formatToParts(new Date());
+  const part = (type: string) => parts.find(item => item.type === type)?.value || "";
+  return `${part("year")}-${part("month")}-${part("day")}`;
+}
+
+function isValidFittingDate(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+  return parsed.getUTCFullYear() === year
+    && parsed.getUTCMonth() === month - 1
+    && parsed.getUTCDate() === day
+    && value >= botswanaToday();
+}
+
 export async function POST(request: Request) {
   try {
     const bearer = (request.headers.get("authorization") || "").match(/^Bearer\s+(.+)$/i);
@@ -63,8 +81,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "The request type or fitting preference is invalid." }, { status: 400 });
     }
     const date = body.preferredFittingDate as string;
-    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      return NextResponse.json({ error: "The preferred fitting date is invalid." }, { status: 400 });
+    if (date && !isValidFittingDate(date)) {
+      return NextResponse.json({ error: "Choose a real fitting date today or later." }, { status: 400 });
+    }
+
+    const db = getFirestore(app);
+    const serviceName = clean(body.serviceName as string);
+    let resolvedServiceId = clean(body.serviceId as string);
+    // If Yusuf has published a live catalogue, validate against it server-side as well.
+    // This prevents stale browser tabs from submitting services that were deactivated.
+    const catalogue = await db.collection("tailoringServices").get();
+    if (!catalogue.empty && serviceName !== "Other / not sure") {
+      const match = catalogue.docs.find(item => item.data().name === serviceName);
+      if (!match || match.data().active !== true) {
+        return NextResponse.json({
+          error: "That service is no longer available in the catalogue. Refresh the page and choose an active service, or select Other / not sure."
+        }, { status: 409 });
+      }
+      resolvedServiceId = match.id;
     }
 
     let referenceImage: { storagePath: string; name: string; type: string; size: number } | null = null;
@@ -91,7 +125,6 @@ export async function POST(request: Request) {
       referenceImage = { storagePath: candidate.storagePath, name: clean(candidate.name), type: candidate.type, size: actualSize };
     }
 
-    const db = getFirestore(app);
     const document = db.collection("tailoringRequests").doc(requestId);
     const now = new Date().toISOString();
     await db.runTransaction(async transaction => {
@@ -103,8 +136,8 @@ export async function POST(request: Request) {
         phone: clean(body.phone as string),
         email: clean(body.email as string),
         requestType: "quote_request",
-        serviceId: clean(body.serviceId as string),
-        serviceName: clean(body.serviceName as string),
+        serviceId: resolvedServiceId,
+        serviceName,
         garmentType: clean(body.garmentType as string),
         stylePreferences: clean(body.stylePreferences as string),
         fabricPreferences: clean(body.fabricPreferences as string),
