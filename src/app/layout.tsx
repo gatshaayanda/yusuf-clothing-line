@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     title: "Yusuf Clothing Line | Tailoring & Alterations",
     description: "Made for you. Tailored in Botswana."
   },
-  icons: { icon: "/yusuf-icon.svg", apple: "/yusuf-icon.svg" },
+  icons: { icon: [{ url: "/yusuf-icon-192.png", sizes: "192x192", type: "image/png" }, { url: "/yusuf-icon-512.png", sizes: "512x512", type: "image/png" }, { url: "/yusuf-icon.svg", sizes: "any", type: "image/svg+xml" }], apple: "/yusuf-icon-192.png" },
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "Yusuf Clothing", statusBarStyle: "default" }
 };
