@@ -44,6 +44,56 @@
       "path": "scripts/identity.config.json",
       "pattern": "boemo",
       "reason": "The identity gate lists inherited client resources as forbidden."
+    },
+    {
+      "path": "scripts/identity.config.json",
+      "pattern": "the-plug-pearl.vercel.app",
+      "reason": "This exact inherited identity/resource is listed as forbidden by the verifier configuration, not used by runtime code."
+    },
+    {
+      "path": "scripts/identity.config.json",
+      "pattern": "the-plug.vercel.app",
+      "reason": "This exact inherited identity/resource is listed as forbidden by the verifier configuration, not used by runtime code."
+    },
+    {
+      "path": "scripts/identity.config.json",
+      "pattern": "africhiko.firebaseapp.com",
+      "reason": "This exact inherited identity/resource is listed as forbidden by the verifier configuration, not used by runtime code."
+    },
+    {
+      "path": "scripts/identity.config.json",
+      "pattern": "boemo-joos-food-deals",
+      "reason": "This exact inherited identity/resource is listed as forbidden by the verifier configuration, not used by runtime code."
+    },
+    {
+      "path": "scripts/identity.config.json",
+      "pattern": "boemoMedia",
+      "reason": "This exact inherited identity/resource is listed as forbidden by the verifier configuration, not used by runtime code."
+    },
+    {
+      "path": "scripts/identity.config.json",
+      "pattern": "namane-tyres.vercel.app",
+      "reason": "This exact inherited identity/resource is listed as forbidden by the verifier configuration, not used by runtime code."
+    },
+    {
+      "path": "scripts/identity.config.json",
+      "pattern": "plug-icon.svg",
+      "reason": "This exact inherited identity/resource is listed as forbidden by the verifier configuration, not used by runtime code."
+    },
+    {
+      "path": "scripts/identity.config.json",
+      "pattern": "plug-icon-192.png",
+      "reason": "This exact inherited identity/resource is listed as forbidden by the verifier configuration, not used by runtime code."
+    },
+    {
+      "path": "scripts/identity.config.json",
+      "pattern": "plug-icon-512.png",
+      "reason": "This exact inherited identity/resource is listed as forbidden by the verifier configuration, not used by runtime code."
+    },
+    {
+      "path": "scripts/identity.config.json",
+      "pattern": "#0866FF",
+      "reason": "This exact inherited identity/resource is listed as forbidden by the verifier configuration, not used by runtime code."
     }
   ]
 }
