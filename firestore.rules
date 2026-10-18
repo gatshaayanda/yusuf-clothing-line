@@ -162,7 +162,8 @@ service cloud.firestore {
           && request.resource.data.updatedAt is string;
       }
 
-      allow create: if signedIn() && !isAdmin() && validNewTailoringRequest();
+      // New customer requests are created by the authenticated server endpoint after validation.
+      allow create: if false;
       allow read: if isAdmin() || (signedIn() && resource.data.customerId == request.auth.uid);
       allow update: if isAdmin() && validAdminRequestUpdate();
       allow delete: if false;
