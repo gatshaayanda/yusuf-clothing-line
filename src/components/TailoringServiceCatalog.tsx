@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element -- service imagery is editable by the business and may use external HTTPS URLs. */
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
