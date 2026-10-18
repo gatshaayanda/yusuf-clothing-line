@@ -4,30 +4,28 @@ importScripts(
   "/api/firebase/messaging-sw-config"
 );
 
-let thePlugMessaging = null;
+let yusufMessaging = null;
 try {
-  const config = self.__THE_PLUG_FIREBASE_CONFIG__;
+  const config = self.__YUSUF_FIREBASE_CONFIG__;
   if (config && config.apiKey && config.projectId && config.messagingSenderId && config.appId) {
     firebase.initializeApp(config);
-    thePlugMessaging = firebase.messaging();
-    thePlugMessaging.onBackgroundMessage((payload) => {
-      // Notification payloads are displayed automatically by Firebase. Only render
-      // data-only pushes here to avoid showing the same notification twice.
+    yusufMessaging = firebase.messaging();
+    yusufMessaging.onBackgroundMessage((payload) => {
       if (payload.notification) return;
-      const title = payload.data?.title || "The Plug update";
+      const title = payload.data?.title || "Yusuf Clothing Line update";
       const options = {
-        body: payload.data?.body || "Open The Plug to check your latest account information.",
-        icon: "/plug-icon.svg",
-        badge: "/plug-icon.svg",
+        body: payload.data?.body || "Open Yusuf Clothing Line to check your latest request and quotation updates.",
+        icon: "/yusuf-icon-192.png",
+        badge: "/yusuf-icon-192.png",
         data: { link: payload.data?.link || "/account" },
       };
       self.registration.showNotification(title, options);
     });
   } else {
-    console.error("The Plug Firebase Messaging web config is incomplete.");
+    console.error("Yusuf Firebase Messaging web config is incomplete.");
   }
 } catch (error) {
-  console.error("The Plug Firebase Messaging service worker could not initialize.", error);
+  console.error("Yusuf Firebase Messaging service worker could not initialize.", error);
 }
 
 self.addEventListener("notificationclick", (event) => {
@@ -45,17 +43,16 @@ self.addEventListener("notificationclick", (event) => {
   }));
 });
 
-const CACHE_VERSION = "theplug-shell-v15";
-const MEDIA_CACHE = "theplug-media-v1";
+const CACHE_VERSION = "yusuf-clothing-shell-v1";
+const MEDIA_CACHE = "yusuf-clothing-media-v1";
 const SHELL_CACHE = CACHE_VERSION;
 const STATIC_LIMIT = 100;
 const PUBLIC_PAGE_LIMIT = 12;
-const APP_SHELL = ["/", "/request", "/offline", "/plug-icon.svg", "/manifest.webmanifest"];
+const APP_SHELL = ["/", "/request", "/offline", "/yusuf-icon.svg", "/yusuf-icon-192.png", "/yusuf-icon-512.png", "/manifest.webmanifest"];
 
 self.addEventListener("install", event => {
   event.waitUntil((async () => {
     await precacheShell();
-    // Install the new routing/cache policy immediately; the page is not force-reloaded.
     await self.skipWaiting();
   })());
 });
@@ -91,7 +88,11 @@ self.addEventListener("message", event => {
 self.addEventListener("activate", event => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.filter(key => (key.startsWith("theplug-shell-") && key !== SHELL_CACHE) || (key.startsWith("theplug-media-") && key !== MEDIA_CACHE)).map(key => caches.delete(key)));
+    // Delete only Yusuf's own prior cache generations; never clear unrelated app caches.
+    await Promise.all(keys.filter(key =>
+      (key.startsWith("yusuf-clothing-shell-") && key !== SHELL_CACHE)
+      || (key.startsWith("yusuf-clothing-media-") && key !== MEDIA_CACHE)
+    ).map(key => caches.delete(key)));
     await self.clients.claim();
   })());
 });
@@ -101,22 +102,17 @@ self.addEventListener("fetch", event => {
   if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) return;
   const url = new URL(request.url);
   if (url.pathname.startsWith("/api/")) return;
-
   const isNavigation = request.mode === "navigate" || request.headers.get("accept")?.includes("text/html");
   const isPrivate = /^\/(?:account|requests|orders|admin|invite)(?:\/|$)/.test(url.pathname);
 
-  // Private/member routes are network-only. Never serve a cached account/request page as
-  // a substitute for a different route or when the authenticated page cannot be fetched.
   if (isNavigation && isPrivate) {
     event.respondWith(fetch(request).catch(() => caches.open(SHELL_CACHE).then(cache => cache.match("/offline")).then(response => response || Response.error())));
     return;
   }
-
   if (url.pathname.startsWith("/_next/static/") || url.pathname === "/manifest.webmanifest" || /\.(?:css|js|woff2?|ttf|otf|png|jpe?g|webp|svg|ico|avif)$/i.test(url.pathname)) {
     event.respondWith(cacheFirst(request));
     return;
   }
-
   if (isNavigation) {
     event.respondWith(fetch(request).then(response => {
       if (response.ok) void caches.open(SHELL_CACHE).then(async cache => {

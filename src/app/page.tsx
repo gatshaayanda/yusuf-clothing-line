@@ -1,13 +1,86 @@
-"use client";
 import Link from "next/link";
-import StorefrontFeed from "@/components/StorefrontFeed";
-import CommunityFeed from "@/components/CommunityFeed";
-import {useEffect,useState} from "react";
-function openInstallPrompt(){window.dispatchEvent(new Event("theplug-open-install"));}
-export default function Home(){const [benefitsOpen,setBenefitsOpen]=useState(false);return <main className="plugSite plugEditorialHome">
-<div className="plugNotice"><div className="plugContainer"><span>🇧🇼 BOTSWANA</span><strong>If we can source it, you can get it.</strong><span>GABORONE · BW</span></div></div>
-<header className="plugNav plugEditorialNav"><div className="plugContainer plugNavInner"><Link href="/" className="plugBrand"><span className="plugMark">P</span><span><strong>THE PLUG</strong><small>SNEAKERS · APPAREL · SOURCING</small></span></Link><nav className="plugEditorialLinks" aria-label="Main navigation"><a href="#featured">Finds</a><a href="#deals">Live offers</a><Link href="/saved">Saved finds</Link></nav><div className="plugActions"><Link href="/account" className="plugButton plugButtonGhost plugMyPlugLink">My Plug ↗</Link><button type="button" onClick={openInstallPrompt} className="plugButton plugButtonGhost">Install ↓</button></div></div></header>
-<StorefrontFeed/><CommunityFeed/>
-<section className="plugMemberLoop"><div className="plugContainer"><div className="plugMemberLoopHead"><div><span className="plugKicker">THE PLUG · YOUR SPACE</span><h2>Keep your finds <em>close.</em></h2></div><button type="button" aria-expanded={benefitsOpen} aria-controls="plug-member-benefits" onClick={()=>setBenefitsOpen(open=>!open)} className="plugMemberLoopToggle">{benefitsOpen?"Hide member benefits":"Show member benefits"} <span aria-hidden="true">{benefitsOpen?"−":"＋"}</span></button></div>{benefitsOpen&&<div id="plug-member-benefits" className="plugMemberPerks"><article><span>01 / YOUR HISTORY</span><h3>Requests, together.</h3><p>Keep your requests, private replies and progress in My Plug.</p></article><article><span>02 / YOUR TIMING</span><h3>Only useful updates.</h3><p>Choose whether to receive relevant notifications when you’re ready.</p></article><article><span>03 / REAL OFFERS</span><h3>No made-up perks.</h3><p>See offers and rewards only when Frank has actually published and confirmed them.</p></article><article><span>04 / KEEP ACCESS</span><h3>Take your history with you.</h3><p>Connect Google to keep access to this session’s history across devices.</p></article><div className="plugMemberPerksAction"><Link href="/account" className="plugCircleAction">Open My Plug <span>↗</span></Link><small>Browsing stays open. Account linking is your choice.</small></div></div>}</div></section>
-<footer className="plugFooter plugEditorialFooter"><div className="plugContainer"><strong>THE PLUG</strong><span>SNEAKERS · APPAREL · SOURCING IN BOTSWANA</span><Link href="/account">My Plug</Link><Link href="/saved">Saved finds</Link><Link href="/request">Request a product</Link><button type="button" onClick={openInstallPrompt}>Install The Plug ↑</button><Link href="/admin">Admin</Link></div></footer>
-</main>}
+import TailoringServiceCatalog from "@/components/TailoringServiceCatalog";
+
+
+
+export default function Home() {
+  return (
+    <main className="yusufHome">
+      <div className="yusufAnnouncement">
+        <span>BOTSWANA · MADE AROUND YOU</span>
+        <span>Custom tailoring · Alterations · Fittings</span>
+      </div>
+
+      <header className="yusufHeader">
+        <Link href="/" className="yusufWordmark" aria-label="Yusuf Clothing Line home">
+          <span className="yusufLogoMark" aria-hidden="true"><span /></span>
+          <span><strong>YUSUF</strong><small>CLOTHING LINE</small></span>
+        </Link>
+        <nav className="yusufNav" aria-label="Main navigation">
+          <a href="#services">Services</a>
+          <a href="#process">How it works</a>
+          <Link href="/account">My orders</Link>
+        </nav>
+        <Link className="yusufHeaderCta" href="/request">Start a request <span aria-hidden="true">↗</span></Link>
+      </header>
+
+      <section className="yusufHero">
+        <div className="yusufHeroCopy">
+          <p className="yusufEyebrow"><span /> PERSONAL TAILORING · BOTSWANA</p>
+          <h1>Made for you.<br /><em>Made to fit.</em></h1>
+          <p className="yusufHeroText">Clothes should feel like they belong to you. Start with an idea, a garment that needs work, or a fit you want to get right.</p>
+          <div className="yusufHeroActions">
+            <Link href="/request" className="yusufButtonPrimary">Tell us what you need <span aria-hidden="true">↗</span></Link>
+            <a href="#services" className="yusufTextLink">Explore services <span aria-hidden="true">↓</span></a>
+          </div>
+          <p className="yusufFinePrint">No installation needed. Share your brief here and follow the next steps in your account.</p>
+        </div>
+        <div className="yusufHeroArt" aria-label="Decorative tailoring-inspired line artwork" role="img">
+          <div className="yusufArtFrame">
+            <div className="yusufPatternCircle" />
+            <div className="yusufPatternLine yusufPatternLineOne" />
+            <div className="yusufPatternLine yusufPatternLineTwo" />
+            <div className="yusufPatternTape">CUT · FIT · FINISH</div>
+            <div className="yusufPatternLabel"><span>YCL</span><small>YOUR FIT, YOUR STORY</small></div>
+          </div>
+          <span className="yusufArtIndex">STUDIO NOTES / 001</span>
+        </div>
+      </section>
+
+      <section className="yusufTrustStrip" aria-label="Service principles">
+        <span><b>01</b> Your brief comes first</span>
+        <span><b>02</b> Fitting guidance when you need it</span>
+        <span><b>03</b> Clear quote before work is confirmed</span>
+      </section>
+
+      <section className="yusufServices" id="services">
+        <div className="yusufSectionIntro">
+          <div><p className="yusufEyebrow">THE SERVICE EDIT</p><h2>Start with<br /><em>what you need.</em></h2></div>
+          <p>Choose a direction to get started. You can describe the garment, add a reference photo and ask for fitting help in your request.</p>
+        </div>
+        <TailoringServiceCatalog />
+      </section>
+
+      <section className="yusufProcess" id="process">
+        <div className="yusufProcessHeading"><p className="yusufEyebrow">A CLEARER WAY TO GET IT MADE</p><h2>From your idea<br />to the <em>final fit.</em></h2></div>
+        <div className="yusufProcessSteps">
+          <article><span>01</span><h3>Tell us the brief</h3><p>Choose a service, describe your style and share a reference image if you have one.</p></article>
+          <article><span>02</span><h3>Review the details</h3><p>We clarify measurements, fitting needs, fabric choices, price and timing before confirming the work.</p></article>
+          <article><span>03</span><h3>Track the progress</h3><p>Keep your request, quotation and recorded order updates together in your account.</p></article>
+        </div>
+      </section>
+
+      <section className="yusufClosing">
+        <div><p className="yusufEyebrow">YOUR NEXT STEP</p><h2>Bring the idea.<br /><em>We’ll shape the plan.</em></h2></div>
+        <Link href="/request" className="yusufButtonPrimary">Start your tailoring request <span aria-hidden="true">↗</span></Link>
+      </section>
+
+      <footer className="yusufFooter">
+        <Link href="/" className="yusufFooterBrand">YUSUF <span>CLOTHING LINE</span></Link>
+        <p>Custom tailoring and alterations · Botswana</p>
+        <div><Link href="/account">My orders</Link><Link href="/admin">Business admin</Link></div>
+        <small>Illustrative catalogue content · Business details and policies will be confirmed by Yusuf.</small>
+      </footer>
+    </main>
+  );
+}

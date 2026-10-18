@@ -1,18 +1,17 @@
 {
   "id": "/",
-  "name": "The Plug | Sneakers & Apparel",
-  "short_name": "The Plug",
-  "description": "Install The Plug for one-tap access to sneaker and apparel sourcing in Botswana. If we can source it, you can get it.",
+  "name": "Yusuf Clothing Line | Tailoring & Alterations",
+  "short_name": "Yusuf Clothing",
+  "description": "Custom tailoring, alterations and made-to-measure garments in Botswana.",
   "categories": ["shopping", "lifestyle"],
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#FFFFFF",
-  "theme_color": "#0866FF",
+  "background_color": "#F8F5F0",
+  "theme_color": "#6B2636",
   "icons": [
-    {"src":"/plug-icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
-    {"src":"/plug-icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
-    {"src":"/plug-icon-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"},
-    {"src":"/plug-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}
+    {"src":"/yusuf-icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"/yusuf-icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"/yusuf-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}
   ]
 }

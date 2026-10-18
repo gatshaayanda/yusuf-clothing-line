@@ -4,18 +4,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import { getIdToken, onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/lib/firebase/client";
 
 type InstallPromptEvent = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 };
 type InstallState = "hidden" | "native" | "embedded";
-
-const APP_NAME = "The Plug";
-const INSTALL_DISMISSED_KEY = "theplug:install:dismissed-at";
-const INSTALL_DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
 
 function environment() {
   if (typeof window === "undefined") return { standalone: true, ios: false, android: false, embedded: false };
@@ -26,38 +20,6 @@ function environment() {
   const embedded = /WhatsApp|Instagram|FBAN|FBAV|Messenger|Line\/|Twitter|TikTok|Snapchat/i.test(ua) ||
     (/Android/i.test(ua) && /; wv\)/i.test(ua));
   return { standalone, ios, android, embedded };
-}
-
-function isIosSafari() {
-  if (typeof window === "undefined") return false;
-  const nav = window.navigator;
-  const ios = /iPad|iPhone|iPod/i.test(nav.userAgent) ||
-    (nav.platform === "MacIntel" && nav.maxTouchPoints > 1);
-  return ios && /Safari/i.test(nav.userAgent) && !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo/i.test(nav.userAgent);
-}
-
-function dismissedRecently() {
-  try {
-    const value = window.localStorage.getItem(INSTALL_DISMISSED_KEY);
-    if (!value) return false;
-    const at = Date.parse(value);
-    if (!Number.isFinite(at)) return false;
-    return Date.now() - at < INSTALL_DISMISS_MS;
-  } catch {
-    return false;
-  }
-}
-
-function rememberDismissal() {
-  try {
-    window.localStorage.setItem(INSTALL_DISMISSED_KEY, new Date().toISOString());
-  } catch {
-    // Installation remains optional when storage is unavailable.
-  }
-}
-
-function clearDismissal() {
-  try { window.localStorage.removeItem(INSTALL_DISMISSED_KEY); } catch {}
 }
 
 export default function PwaRegister({ initialEmbedded = false, initialAndroid = false }: { initialEmbedded?: boolean; initialAndroid?: boolean }) {
@@ -79,31 +41,11 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
     setEmbeddedAndroid((initialEmbedded && initialAndroid) || (env.embedded && env.android));
     setInstallPlatform(env.ios ? "ios" : env.android ? "android" : "other");
 
-    const retryPendingOrderNotifications = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-      const idToken = await getIdToken(user).catch(() => null);
-      if (!idToken) return;
-      const pendingKeys = Object.keys(localStorage).filter(key => key.startsWith("plug-pending-order-notification-"));
-      for (const key of pendingKeys) {
-        const orderId = key.replace("plug-pending-order-notification-", "");
-        try {
-          const response = await fetch("/api/notifications/order-created", {
-            method: "POST",
-            headers: { Authorization: "Bearer " + idToken, "Content-Type": "application/json" },
-            body: JSON.stringify({ orderId })
-          });
-          if (response.ok) localStorage.removeItem(key);
-        } catch {}
-      }
-    };
-
     const online = () => {
       setOffline(false);
       setReconnecting(true);
       window.setTimeout(() => {
         setReconnecting(false);
-        void retryPendingOrderNotifications();
       }, 1200);
     };
     const off = () => {
@@ -123,13 +65,13 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
 
     window.addEventListener("online", online);
     window.addEventListener("offline", off);
-    const promptWindow = window as Window & { __thePlugInstallPrompt?: Event; __thePlugPwaListenerReady?: boolean };
+    const promptWindow = window as Window & { __yusufInstallPrompt?: Event; __yusufPwaListenerReady?: boolean };
     // The browser can emit beforeinstallprompt before React hydrates. Adopt the
     // event captured by the tiny beforeInteractive script before listening normally.
-    promptWindow.__thePlugPwaListenerReady = true;
-    const earlyPrompt = promptWindow.__thePlugInstallPrompt;
+    promptWindow.__yusufPwaListenerReady = true;
+    const earlyPrompt = promptWindow.__yusufInstallPrompt;
     if (earlyPrompt) {
-      delete promptWindow.__thePlugInstallPrompt;
+      delete promptWindow.__yusufInstallPrompt;
       onBeforeInstallPrompt(earlyPrompt);
     }
     window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
@@ -153,7 +95,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
         void install();
         return;
       }
-      // Match the working Odi install flow: never let a visible install CTA silently
+      // Match the working the native-install pattern: never let a visible install CTA silently
       // do nothing when this browser has not emitted beforeinstallprompt.
       const platform = current.ios ? "ios" : current.android ? "android" : "other";
       setInstallPlatform(platform);
@@ -164,9 +106,8 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
       installPromptRef.current = null;
       setInstallHelpOpen(false);
       setInstallState("hidden");
-      clearDismissal();
     };
-    window.addEventListener("theplug-open-install", requestInstall);
+    window.addEventListener("yusuf-open-install", requestInstall);
     window.addEventListener("appinstalled", appInstalled);
 
     let registration: ServiceWorkerRegistration | null = null;
@@ -189,19 +130,16 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
     };
 
     void register();
-    void retryPendingOrderNotifications();
-    const stopPendingAuth = onAuthStateChanged(auth, () => { void retryPendingOrderNotifications(); });
     const controllerChange = () => { if (reloadForUpdate.current) window.location.reload(); };
     navigator.serviceWorker?.addEventListener("controllerchange", controllerChange);
 
     return () => {
-      window.removeEventListener("theplug-open-install", requestInstall);
+      window.removeEventListener("yusuf-open-install", requestInstall);
       window.removeEventListener("appinstalled", appInstalled);
       window.removeEventListener("online", online);
       window.removeEventListener("offline", off);
       window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
       navigator.serviceWorker?.removeEventListener("controllerchange", controllerChange);
-      stopPendingAuth();
     };
   }, [initialEmbedded, initialAndroid]);
 
@@ -212,7 +150,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
     const previousOverflow = document.body.style.overflow;
     if (isEmbeddedGate) document.body.style.overflow = "hidden";
     if (installState === "embedded") embeddedActionRef.current?.focus();
-    else document.querySelector<HTMLButtonElement>(".plugInstallPrimary")?.focus();
+    else document.querySelector<HTMLButtonElement>(".yusufInstallPrimary")?.focus();
 
     const keepDialogFocused = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -240,7 +178,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
     const prompt = installPromptRef.current;
     if (!prompt) {
       // Native install events are browser-controlled. Show the same explicit
-      // platform-specific fallback as Odi rather than silently returning.
+      // platform-specific fallback rather than silently returning.
       const env = environment();
       setInstallPlatform(env.ios ? "ios" : env.android ? "android" : "other");
       setInstallHelpOpen(true);
@@ -249,8 +187,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
     }
     try {
       await prompt.prompt();
-      const choice = await prompt.userChoice;
-      if (choice.outcome === "dismissed") rememberDismissal();
+      await prompt.userChoice;
     } catch {
       // The event is one-shot and browser-controlled. Do not replace it with
       // generic Chrome-menu instructions when the native prompt fails.
@@ -262,7 +199,6 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
   }
 
   function dismissInstall() {
-    rememberDismissal();
     setInstallHelpOpen(false);
     setInstallState("hidden");
   }
@@ -293,66 +229,66 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
     }, 1800);
   }
 
-  const installShellStyle: CSSProperties = { position: "fixed", left: 16, right: 16, bottom: 16, zIndex: 1000, maxWidth: 720, margin: "0 auto", padding: 16, borderRadius: 18, background: "#FFFFFF", color: "#111318", boxShadow: "0 12px 40px rgba(0,0,0,.18)", border: "1px solid rgba(17,19,24,.12)" };
+  const installShellStyle: CSSProperties = { position: "fixed", left: 16, right: 16, bottom: 16, zIndex: 1000, maxWidth: 720, margin: "0 auto", padding: 16, borderRadius: 18, background: "#F8F5F0", color: "#24201F", boxShadow: "0 12px 40px rgba(30,10,18,.18)", border: "1px solid #e2d8cf" };
   const embeddedInstallStyle: CSSProperties = { position: "fixed", inset: 0, zIndex: 2147483647, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.82)", backdropFilter: "blur(4px)", overscrollBehavior: "contain" };
   const installCard = installState === "native" ? (
     <div style={installShellStyle} role="presentation">
-      <section className="plugInstallModal" role="dialog" aria-modal="false" aria-labelledby="plug-install-title" aria-describedby="plug-install-message">
-        <div className="plugInstallTop"><span className="plugInstallMark">P</span><span className="plugInstallTag">THE PLUG · BOTSWANA</span><button type="button" className="plugInstallClose" aria-label="Close install prompt" onClick={dismissInstall}>×</button></div>
-        <div className="plugInstallKicker">YOUR SOURCING APP</div>
-        <h2 id="plug-install-title">The Plug.<br/><em>One tap away.</em></h2>
-        <p id="plug-install-message">Install The Plug on your device for a direct home-screen shortcut to your sourcing requests, account and private conversations with Frank.</p>
+      <section className="yusufInstallModal" role="dialog" aria-modal="true" aria-labelledby="yusuf-install-title" aria-describedby="yusuf-install-message">
+        <div className="yusufInstallTop"><span className="yusufInstallMark">Y</span><span className="yusufInstallTag">YUSUF CLOTHING LINE · BOTSWANA</span><button type="button" className="yusufInstallClose" aria-label="Close install prompt" onClick={dismissInstall}>×</button></div>
+        <div className="yusufInstallKicker">YOUR TAILORING STUDIO</div>
+        <h2 id="yusuf-install-title">Yusuf Clothing Line.<br/><em>One tap away.</em></h2>
+        <p id="yusuf-install-message">Install Yusuf Clothing Line on your device for a direct home-screen shortcut to your tailoring requests, quotations and recorded progress.</p>
         {installHelpOpen ? (
-          <div className="plugInstallSteps" role="status" aria-live="polite">
+          <div className="yusufInstallSteps" role="status" aria-live="polite">
             {installPlatform === "ios" ? (
               <>
-                <strong>Add The Plug from Safari</strong>
+                <strong>Add Yusuf Clothing Line from Safari</strong>
                 <p>Open this page in <b>Safari</b>, tap <b>Share</b>, choose <b>Add to Home Screen</b>, then tap <b>Add</b>.</p>
               </>
             ) : installPlatform === "android" ? (
               <>
-                <strong>Add The Plug from Chrome</strong>
+                <strong>Add Yusuf Clothing Line from Chrome</strong>
                 <p>In Chrome, tap the <b>⋮ menu</b> and choose <b>Install app</b> or <b>Add to Home screen</b>. The wording depends on your Chrome version.</p>
               </>
             ) : (
               <>
-                <strong>Install The Plug from your browser</strong>
-                <p>In Chrome or Edge, open the browser menu and choose <b>Install The Plug</b> or <b>Install page as app</b>, if offered.</p>
+                <strong>Install Yusuf Clothing Line from your browser</strong>
+                <p>In Chrome or Edge, open the browser menu and choose <b>Install Yusuf Clothing Line</b> or <b>Install page as app</b>, if offered.</p>
               </>
             )}
-            <button type="button" className="plugInstallPrimary" onClick={dismissInstall}>Got it</button>
+            <button type="button" className="yusufInstallPrimary" onClick={dismissInstall}>Got it</button>
           </div>
         ) : (
           <>
-            <div className="plugInstallModalBenefits"><span><b>01</b><strong>Quick access</strong><small>Open The Plug from your home screen.</small></span><span><b>02</b><strong>Your requests</strong><small>Return to your sourcing journey and account.</small></span><span><b>03</b><strong>Private by account</strong><small>Keep your conversations in your member space.</small></span></div>
-            <button type="button" className="plugInstallPrimary" onClick={() => void install()}>Install The Plug →</button>
-            <button type="button" className="plugInstallSecondary" onClick={dismissInstall}>Not now</button>
+            <div className="yusufInstallModalBenefits"><span><b>01</b><strong>Quick access</strong><small>Open Yusuf Clothing Line from your home screen.</small></span><span><b>02</b><strong>Your requests</strong><small>Return to your tailoring requests and updates.</small></span><span><b>03</b><strong>Private request history</strong><small>Return on this device to view your saved request history.</small></span></div>
+            <button type="button" className="yusufInstallPrimary" onClick={() => void install()}>Install Yusuf Clothing Line →</button>
+            <button type="button" className="yusufInstallSecondary" onClick={dismissInstall}>Not now</button>
           </>
         )}
-        <p className="plugInstallFootnote">No app-store search needed. Your browser will guide the installation.</p>
+        <p className="yusufInstallFootnote">No app-store search needed. Your browser will guide the installation.</p>
       </section>
     </div>
   ) : installState === "embedded" ? (
-    <div style={embeddedInstallStyle} role="alertdialog" aria-modal="true" aria-labelledby="plug-embedded-title" aria-describedby="plug-embedded-message">
+    <div style={embeddedInstallStyle} role="alertdialog" aria-modal="true" aria-labelledby="yusuf-embedded-title" aria-describedby="yusuf-embedded-message">
       <div className="pwaInstallInfo" style={{...installShellStyle, position: "relative", left: "auto", right: "auto", bottom: "auto", width: "100%", maxWidth: 520, margin: 0}}>
         <div>
-          <strong id="plug-embedded-title"><span aria-hidden="true">🌐 </span>OPEN THE PLUG IN YOUR BROWSER</strong>
-          <span id="plug-embedded-message">{embeddedAndroid ? <>Tap below to open The Plug in Chrome. Then open the <b>⋮ menu</b> and choose <b>Install app</b>.</> : <>The Plug opened inside another app. Use that app’s menu to open this page in your browser, then look for <b>Install app</b> in the browser menu.</>}</span>
+          <strong id="yusuf-embedded-title"><span aria-hidden="true">🌐 </span>OPEN YUSUF CLOTHING LINE IN YOUR BROWSER</strong>
+          <span id="yusuf-embedded-message">{embeddedAndroid ? <>Tap below to open Yusuf Clothing Line in Chrome. Then open the <b>⋮ menu</b> and choose <b>Install app</b>.</> : <>Yusuf Clothing Line opened inside another app. Use that app’s menu to open this page in your browser, then look for <b>Install app</b> in the browser menu.</>}</span>
         </div>
         <div className="pwaInstallActions" style={{display:"flex",justifyContent:"flex-end"}}>
-          <button ref={embeddedActionRef} type="button" style={{background:"#0866FF",color:"#fff"}} onClick={openBrowser}>{embeddedAndroid ? "OPEN IN CHROME" : "OPEN IN BROWSER"}</button>
+          <button ref={embeddedActionRef} type="button" style={{background:"#6B2636",color:"#fff"}} onClick={openBrowser}>{embeddedAndroid ? "OPEN IN CHROME" : "OPEN IN BROWSER"}</button>
         </div>
       </div>
     </div>
   ) : null;
 
   return <>
-    {offline && <div className="offlineBanner" role="status" aria-live="polite"><span aria-hidden="true">⚡</span> Offline · Saved public finds may still be available on this device. Requests and account changes need a connection.</div>}
-    {!offline && reconnecting && <div className="offlineBanner reconnectingBanner" role="status" aria-live="polite"><span aria-hidden="true">↻</span> Reconnected · The Plug is syncing and checking for the latest information.</div>}
+    {offline && <div className="offlineBanner" role="status" aria-live="polite"><span aria-hidden="true">⚡</span> Offline · Previously viewed pages may be available on this device. New requests and account changes need a connection.</div>}
+    {!offline && reconnecting && <div className="offlineBanner reconnectingBanner" role="status" aria-live="polite"><span aria-hidden="true">↻</span> Reconnected · Checking for the latest catalogue and request information.</div>}
     {!environment().standalone && installState !== "embedded" && (
       <button
         type="button"
-        className="plugPwaInstallButton"
+        className="yusufPwaInstallButton"
         onClick={() => {
           if (installPromptRef.current) {
             void install();
@@ -364,10 +300,10 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
           setInstallState("native");
         }}
       >
-        Install The Plug ↓
+        Install Yusuf Clothing Line ↓
       </button>
     )}
     {installCard}
-    {updateReady && <div className="pwaUpdate" role="status" aria-live="polite"><div><strong>The Plug update is ready</strong><span>Refresh when you are ready.</span></div><button type="button" className="button buttonPrimary" onClick={applyUpdate}>Refresh</button></div>}
+    {updateReady && <div className="pwaUpdate" role="status" aria-live="polite"><div><strong>Yusuf Clothing Line update is ready</strong><span>Refresh when you are ready.</span></div><button type="button" className="yusufPwaUpdateButton" onClick={applyUpdate}>Refresh</button></div>}
   </>;
 }

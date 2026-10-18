@@ -1,13 +1,14 @@
 {
-  "name": "the-plug",
+  "name": "yusuf-clothing-line",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run verify:identity && next build",
+    "build": "npm run verify:identity && npm run verify:clone-readiness && next build",
     "start": "next start",
     "lint": "eslint .",
-    "verify:identity": "node scripts/verify-identity.mjs"
+    "verify:identity": "node scripts/verify-identity.mjs",
+    "verify:clone-readiness": "node scripts/verify-clone-readiness.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^1.5.0",
