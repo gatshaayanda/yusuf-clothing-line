@@ -30,6 +30,8 @@ check("PWA registration and service worker exist", exists("src/app/pwa-register.
 check("Customer storefront uses editable catalogue", /TailoringServiceCatalog/.test(read("src/app/page.tsx")));
 check("Customer request form uses dedicated tailoring collection", /tailoringRequests/.test(read("src/app/request/request-form.tsx")));
 check("Customer request form uploads to owner-scoped path", /tailoringReferences\//.test(read("src/app/request/request-form.tsx")) && /uploadBytes/.test(read("src/app/request/request-form.tsx")));
+check("Customer request creation is validated server-side", exists("src/app/api/tailoring-request/create/route.ts") && /verifyIdToken/.test(read("src/app/api/tailoring-request/create/route.ts")) && /getMetadata/.test(read("src/app/api/tailoring-request/create/route.ts")));
+check("Firestore does not allow direct client request creation", /allow create: if false/.test(read("firestore.rules")));
 check("Customer history reads private request records", /tailoringRequests/.test(read("src/app/account/customer-account.tsx")));
 check("Quote acceptance verifies the signed-in customer server-side", /verifyIdToken/.test(read("src/app/api/tailoring-request/accept-quote/route.ts")) && /data\.customerId !== user\.uid/.test(read("src/app/api/tailoring-request/accept-quote/route.ts")));
 check("Admin workspace implements catalogue and request CRUD", /setDoc/.test(read("src/components/TailoringAdminDashboard.tsx")) && /deleteDoc/.test(read("src/components/TailoringAdminDashboard.tsx")) && /updateDoc/.test(read("src/components/TailoringAdminDashboard.tsx")));
