@@ -14,7 +14,7 @@ try {
       if (payload.notification) return;
       const title = payload.data?.title || "Yusuf Clothing Line update";
       const options = {
-        body: payload.data?.body || "Open Yusuf Clothing Line to check your latest order information.",
+        body: payload.data?.body || "Open Yusuf Clothing Line to check your latest request and quotation updates.",
         icon: "/yusuf-icon-192.png",
         badge: "/yusuf-icon-192.png",
         data: { link: payload.data?.link || "/account" },
