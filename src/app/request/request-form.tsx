@@ -52,7 +52,7 @@ export default function RequestForm() {
     if (!hasFirebaseWebConfig) return;
     return onSnapshot(collection(db, "tailoringServices"), snapshot => {
       const names = snapshot.docs.map(item => item.data()).filter(item => item.active === true && typeof item.name === "string").map(item => String(item.name).slice(0, 120));
-      setAvailableServices(current => [...new Set([...serviceOptions, ...names, service].filter(Boolean))]);
+      setAvailableServices([...new Set([...serviceOptions, ...names, service].filter(Boolean))]);
     });
   }, [service]);
 
@@ -103,7 +103,7 @@ export default function RequestForm() {
         });
         referenceImage = { storagePath: uploadedPath, name: file.name.slice(0, 180), type: file.type, size: file.size };
       }
-      const serviceId = service.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const serviceId = service.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "custom-request";
       const token = await current.getIdToken();
       const response = await fetch("/api/tailoring-request/create", {
         method: "POST",
@@ -171,7 +171,7 @@ export default function RequestForm() {
       </header>
       <div className="yusufRequestLayout">
         <aside className="yusufRequestIntro">
-          <p className="yusufEyebrow">LET'S START WITH YOUR BRIEF</p>
+          <p className="yusufEyebrow">LET’S START WITH YOUR BRIEF</p>
           <h1>Tell us what<br /><em>you have in mind.</em></h1>
           <p>Share the garment, fit or alteration you need. You can provide measurements now or ask for fitting help.</p>
           <div className="yusufPrivacyNote"><strong>Your details stay private.</strong><span>Measurements and reference images are attached to your request and are not displayed publicly.</span></div>
