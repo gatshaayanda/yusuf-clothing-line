@@ -101,7 +101,7 @@ export default function CustomerAccount() {
         <p className="yusufEyebrow">YOUR PRIVATE SPACE</p>
         <h1>Your requests.<br /><em>Your fit.</em></h1>
         <p>Review your requests, quotations, fitting dates and recorded progress in one place.</p>
-        {user?.isAnonymous && <small>This private session is saved to this browser/device. Link an account feature can be added later to help you keep access across devices.</small>}
+        {user?.isAnonymous && <small>This private session is tied to this browser/device. Cross-device account linking is not available in this initial version.</small>}
       </section>
       {message && <p className="yusufAccountNotice" role="status">{message}</p>}
       {error && <p className="yusufAccountError" role="alert">{error}</p>}
