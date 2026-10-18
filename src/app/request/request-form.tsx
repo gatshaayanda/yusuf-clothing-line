@@ -50,11 +50,28 @@ export default function RequestForm() {
 
   useEffect(() => {
     if (!hasFirebaseWebConfig) return;
-    return onSnapshot(collection(db, "tailoringServices"), snapshot => {
-      const names = snapshot.docs.map(item => item.data()).filter(item => item.active === true && typeof item.name === "string").map(item => String(item.name).slice(0, 120));
-      setAvailableServices([...new Set([...serviceOptions, ...names, service].filter(Boolean))]);
-    });
-  }, [service]);
+    return onSnapshot(
+      collection(db, "tailoringServices"),
+      snapshot => {
+        if (snapshot.empty) {
+          // Keep the useful placeholder catalogue available until Yusuf publishes live services.
+          setAvailableServices(serviceOptions);
+          return;
+        }
+        const names = snapshot.docs
+          .map(item => item.data())
+          .filter(item => item.active === true && typeof item.name === "string")
+          .map(item => String(item.name).slice(0, 120));
+        const nextOptions = [...new Set([...names, "Other / not sure"])];
+        setAvailableServices(nextOptions);
+        // A deep link may point to a service Yusuf has since deactivated.
+        setService(current => current && nextOptions.includes(current) ? current : "");
+      },
+      () => {
+        setAvailableServices(serviceOptions);
+      }
+    );
+  }, []);
 
   function chooseFile(next: File | null) {
     setError("");
