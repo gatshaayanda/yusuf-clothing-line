@@ -2,53 +2,90 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
+const configPath = path.join(root, "scripts/identity.config.json");
+const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
 const failures = [];
-const ignoredDirs = new Set([".git", "node_modules", ".next", "coverage"]);
+const ignoredDirs = new Set([".git", "node_modules", ".next", "coverage", ".vercel"]);
+const textExtensions = new Set([".ts", ".tsx", ".js", ".mjs", ".cjs", ".json", ".webmanifest", ".css", ".md", ".yml", ".yaml", ".html", ".txt", ".rules", ".svg", ".xml", ".sh"]);
 
+function read(relativePath) {
+  return fs.readFileSync(path.join(root, relativePath), "utf8");
+}
+function exists(relativePath) {
+  return fs.existsSync(path.join(root, relativePath));
+}
 function walk(dir) {
   const files = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     if (ignoredDirs.has(entry.name)) continue;
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) files.push(...walk(full));
-    else files.push(full);
+    else if (textExtensions.has(path.extname(entry.name).toLowerCase())) files.push(full);
   }
   return files;
 }
-
-function read(relativePath) {
-  return fs.readFileSync(path.join(root, relativePath), "utf8");
+function allowedLegacy(relativePath, pattern) {
+  return (config.allowedLegacyStrings || []).some(item => item.path === relativePath && item.pattern.toLowerCase() === pattern.toLowerCase() && typeof item.reason === "string" && item.reason.trim().length > 10);
 }
+function fail(message) { failures.push(message); }
 
-for (const [file, expected] of [
-  ["package.json", /"name":\s*"yusuf-clothing-line"/],
-  ["src/app/layout.tsx", /Yusuf Clothing Line \| Tailoring & Alterations/],
-  ["src/app/layout.tsx", /applicationName:\s*"Yusuf Clothing Line"/],
-  ["public/manifest.webmanifest", /"name":\s*"Yusuf Clothing Line \| Tailoring & Alterations"/],
-  ["public/manifest.webmanifest", /"short_name":\s*"Yusuf Clothing"/],
-  ["src/app/manifest.ts", /short_name:\s*"Yusuf Clothing"/],
-  ["src/app/manifest.ts", /theme_color:\s*"#6B2636"/],
-  ["public/sw.js", /yusuf-clothing-shell-v\d+/],
-  ["public/sw.js", /yusuf-clothing-media-v\d+/],
-  ["public/sw.js", /__YUSUF_FIREBASE_CONFIG__/],
-  [".env.example", /NEXT_PUBLIC_FIREBASE_PROJECT_ID=yusuf-clothing-line/],
-  [".env.example", /FIREBASE_PROJECT_ID=yusuf-clothing-line/],
-  ["src/lib/firebase/client.ts", /projectId: "yusuf-clothing-line"/],
-  ["src/lib/firebase/client.ts", /matchesYusufProject/],
-  ["src/app/api/firebase/messaging-sw-config/route.ts", /NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "yusuf-clothing-line"/],
-]) {
-  if (!expected.test(read(file))) failures.push(file + ": missing expected Yusuf identity/configuration");
+const packageJson = JSON.parse(read("package.json"));
+if (packageJson.name !== "yusuf-clothing-line") fail("package.json name is not yusuf-clothing-line.");
+
+const publicManifest = JSON.parse(read("public/manifest.webmanifest"));
+if (publicManifest.name !== config.manifestName) fail("Public manifest name differs from identity.config.json.");
+if (publicManifest.short_name !== config.shortName) fail("Public manifest short_name differs from identity.config.json.");
+if (publicManifest.theme_color !== config.themeColor) fail("Public manifest theme_color differs from identity.config.json.");
+if (!Array.isArray(publicManifest.icons) || !publicManifest.icons.some(icon => icon.src === config.canonicalIcon)) fail("Public manifest does not reference the configured canonical icon.");
+
+const generatedManifest = read("src/app/manifest.ts");
+for (const [field, value] of [["name", config.manifestName], ["short_name", config.shortName], ["theme_color", config.themeColor]]) {
+  if (!generatedManifest.includes(field + ': "' + value + '"')) fail("Generated manifest does not match " + field + ".");
 }
+if (!generatedManifest.includes('src: "' + config.canonicalIcon + '"')) fail("Generated manifest does not reference the configured canonical icon.");
 
-for (const file of ["public/manifest.webmanifest", "src/app/manifest.ts", "src/app/layout.tsx", "public/sw.js"]) {
-  const content = read(file);
-  if (/the-plug-pearl\.vercel\.app|the-plug\.vercel\.app|africhiko\.firebaseapp\.com|projectId:\s*["']africhiko["']/i.test(content)) {
-    failures.push(file + ": inherited production identity or Firebase project remains");
+const layout = read("src/app/layout.tsx");
+if (!layout.includes(config.manifestName) || !layout.includes('applicationName: "Yusuf Clothing Line"')) fail("Root metadata does not use Yusuf identity.");
+if (!layout.includes('"/manifest.webmanifest"')) fail("Root metadata does not reference the manifest.");
+const sw = read("public/sw.js");
+if (!sw.includes(config.serviceWorkerCachePrefix + "shell-v")) fail("Service worker shell cache does not use the configured unique prefix.");
+if (!sw.includes(config.serviceWorkerCachePrefix + "media-v")) fail("Service worker media cache does not use the configured unique prefix.");
+if (!sw.includes("__YUSUF_FIREBASE_CONFIG__")) fail("Service worker Firebase messaging config key is not Yusuf-specific.");
+
+const firebaseClient = read("src/lib/firebase/client.ts");
+if (!firebaseClient.includes('projectId: "' + config.firebaseProjectId + '"') || !firebaseClient.includes("matchesYusufProject")) fail("Firebase client does not fail closed for non-Yusuf project configuration.");
+const env = read(".env.example");
+if (!env.includes("NEXT_PUBLIC_FIREBASE_PROJECT_ID=" + config.firebaseProjectId) || !env.includes("FIREBASE_PROJECT_ID=" + config.firebaseProjectId)) fail(".env.example does not target the dedicated Yusuf Firebase project.");
+if (!env.includes("YUSUF_OPERATIONS_WORD=")) fail(".env.example does not document Yusuf's separate operations secret.");
+
+for (const icon of ["/yusuf-icon.svg", "/yusuf-icon-192.png", "/yusuf-icon-512.png"]) {
+  const file = path.join(root, "public", icon.replace(/^\//, ""));
+  if (!fs.existsSync(file)) { fail("Missing icon asset " + icon + "."); continue; }
+  if (icon.endsWith(".png")) {
+    const bytes = fs.readFileSync(file);
+    const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+    if (bytes.length < 24 || !bytes.subarray(0, 8).equals(signature)) {
+      fail(icon + " is not a valid PNG file.");
+      continue;
+    }
+    const width = bytes.readUInt32BE(16);
+    const height = bytes.readUInt32BE(20);
+    const expected = icon.includes("192") ? 192 : 512;
+    if (width !== expected || height !== expected) fail(icon + " must be " + expected + "x" + expected + "; found " + width + "x" + height + ".");
   }
 }
 
-if (!fs.existsSync(path.join(root, "public/yusuf-icon.svg"))) {
-  failures.push("public/yusuf-icon.svg: missing Yusuf app icon");
+const allFiles = walk(root);
+for (const absolutePath of allFiles) {
+  const relativePath = path.relative(root, absolutePath).replace(/\\/g, "/");
+  let content;
+  try { content = fs.readFileSync(absolutePath, "utf8"); } catch { continue; }
+  for (const pattern of config.forbiddenPatterns || []) {
+    const expression = new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    if (expression.test(content) && !allowedLegacy(relativePath, pattern)) {
+      fail(relativePath + " contains forbidden inherited identity/resource text: " + pattern + ".");
+    }
+  }
 }
 
 if (failures.length) {
@@ -56,5 +93,4 @@ if (failures.length) {
   for (const failure of failures) console.error(" - " + failure);
   process.exit(1);
 }
-
-console.log("YUSUF CORE IDENTITY VERIFIED — metadata, manifests, cache namespace and Firebase project target.");
+console.log("YUSUF IDENTITY VERIFIED — package, metadata, manifests, raster/SVG icons, cache namespace and Firebase target.");
