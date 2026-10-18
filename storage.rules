@@ -23,6 +23,20 @@ service firebase.storage {
       && request.resource.size<10*1024*1024
       && (request.resource.contentType.matches('image/.*')||request.resource.contentType=='application/pdf');
   }
+  // Private customer reference images: never grant public reads.
+  match /tailoringReferences/{uid}/{requestId}/{fileName} {
+    allow read: if request.auth != null
+      && (request.auth.uid == uid || isAdmin());
+    allow create, update: if request.auth != null
+      && request.auth.uid == uid
+      && request.resource.size > 0
+      && request.resource.size <= 5 * 1024 * 1024
+      && request.resource.contentType in ['image/jpeg', 'image/png', 'image/webp', 'image/avif']
+      && request.resource.metadata.ownerUid == uid
+      && request.resource.metadata.requestId == requestId;
+    allow delete: if request.auth != null
+      && (request.auth.uid == uid || isAdmin());
+  }
   match /{allPaths=**}{allow read,write:if false;}
  }
 }
