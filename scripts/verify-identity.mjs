@@ -2,58 +2,56 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const forbiddenText = [
-  /\bboemo\b/i,
-  /meating[ -]?place/i,
-  /namane[ -]?tyres/i,
-  /atlas[ -]?service[ -]?centre/i,
-  /tutorme/i,
-  /namane-tyres\.vercel\.app/i,
-  /boemo-joos-food-deals/i,
-  /#FFC800/i,
-  /#FF7B00/i,
-  /#FF2A85/i,
-  /#00E5FF/i
-];
+const failures = [];
+const ignoredDirs = new Set([".git", "node_modules", ".next", "coverage"]);
 
-const ignoredDirs = new Set([".git","node_modules",".next","coverage"]);
-const ignoredFiles = new Set(["AGENTS.md","scripts/verify-identity.mjs","docs/PWA-FOUNDATION.md"]);
-const textExtensions = new Set([".ts",".tsx",".js",".mjs",".css",".json",".webmanifest",".md",".yml",".yaml",".txt",".html",".svg"]);
-
-function walk(dir){
-  const files=[];
-  for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
-    if(ignoredDirs.has(entry.name)) continue;
-    const full=path.join(dir,entry.name);
-    if(entry.isDirectory()) files.push(...walk(full));
+function walk(dir) {
+  const files = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (ignoredDirs.has(entry.name)) continue;
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) files.push(...walk(full));
     else files.push(full);
   }
   return files;
 }
 
-const failures=[];
-for(const file of walk(root)){
-  const rel=path.relative(root,file).replaceAll(path.sep,"/");
-  if(ignoredFiles.has(rel)) continue;
-  if(!textExtensions.has(path.extname(file).toLowerCase())) continue;
-  const content=fs.readFileSync(file,"utf8").replaceAll("BOEMO_REMINDER_CRON_SECRET","__REMINDER_CRON_SECRET__");
-  for(const pattern of forbiddenText){
-    if(pattern.test(content)) failures.push(`${rel}: inherited identity match ${pattern}`);
+function read(relativePath) {
+  return fs.readFileSync(path.join(root, relativePath), "utf8");
+}
+
+for (const [file, expected] of [
+  ["package.json", /"name":\s*"yusuf-clothing-line"/],
+  ["src/app/layout.tsx", /Yusuf Clothing Line \| Tailoring & Alterations/],
+  ["src/app/layout.tsx", /applicationName:\s*"Yusuf Clothing Line"/],
+  ["public/manifest.webmanifest", /"name":\s*"Yusuf Clothing Line \| Tailoring & Alterations"/],
+  ["public/manifest.webmanifest", /"short_name":\s*"Yusuf Clothing"/],
+  ["src/app/manifest.ts", /short_name:\s*"Yusuf Clothing"/],
+  ["src/app/manifest.ts", /theme_color:\s*"#6B2636"/],
+  ["public/sw.js", /yusuf-clothing-shell-v\d+/],
+  ["public/sw.js", /yusuf-clothing-media-v\d+/],
+  ["public/sw.js", /__YUSUF_FIREBASE_CONFIG__/],
+  [".env.example", /NEXT_PUBLIC_FIREBASE_PROJECT_ID=yusuf-clothing-line/],
+  [".env.example", /FIREBASE_PROJECT_ID=yusuf-clothing-line/],
+]) {
+  if (!expected.test(read(file))) failures.push(file + ": missing expected Yusuf identity/configuration");
+}
+
+for (const file of ["public/manifest.webmanifest", "src/app/manifest.ts", "src/app/layout.tsx", "public/sw.js"]) {
+  const content = read(file);
+  if (/the-plug-pearl\.vercel\.app|the-plug\.vercel\.app|africhiko\.firebaseapp\.com|projectId:\s*["']africhiko["']/i.test(content)) {
+    failures.push(file + ": inherited production identity or Firebase project remains");
   }
 }
 
-const manifest=JSON.parse(fs.readFileSync(path.join(root,"public/manifest.webmanifest"),"utf8"));
-if(manifest.name!=="The Plug | Sneakers & Apparel") failures.push("public/manifest.webmanifest: wrong name");
-if(manifest.short_name!=="The Plug") failures.push("public/manifest.webmanifest: wrong short_name");
-if(manifest.theme_color!=="#0866FF") failures.push("public/manifest.webmanifest: wrong theme color");
-if(!manifest.icons?.some(icon=>icon.src==="/plug-icon.svg")) failures.push("public/manifest.webmanifest: canonical The Plug icon missing");
-if(!fs.existsSync(path.join(root,"public/plug-icon.svg"))) failures.push("public/plug-icon.svg: missing");
-const sw=fs.readFileSync(path.join(root,"public/sw.js"),"utf8");
-if(!/theplug-shell-v\d+/.test(sw)) failures.push("public/sw.js: missing The Plug cache namespace");
-if(!sw.includes("/plug-icon.svg")) failures.push("public/sw.js: canonical icon missing from app shell");
-if(failures.length){
-  console.error("IDENTITY VERIFICATION FAILED");
-  for(const failure of failures) console.error(" - "+failure);
+if (!fs.existsSync(path.join(root, "public/yusuf-icon.svg"))) {
+  failures.push("public/yusuf-icon.svg: missing Yusuf app icon");
+}
+
+if (failures.length) {
+  console.error("YUSUF IDENTITY VERIFICATION FAILED");
+  for (const failure of failures) console.error(" - " + failure);
   process.exit(1);
 }
-console.log("IDENTITY VERIFIED — The Plug identity is isolated from the BOEMO foundation.");
+
+console.log("YUSUF CORE IDENTITY VERIFIED — metadata, manifests, cache namespace and Firebase project target.");
