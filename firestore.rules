@@ -598,12 +598,12 @@ service cloud.firestore {
             'productionStage', 'fittingDate', 'dueDate', 'collectionMethod',
             'adminNotes', 'completedAt', 'collectedAt', 'updatedAt'
           ])
-          && request.resource.data.status in [
-            'new', 'reviewing', 'awaiting_customer', 'quote_ready',
-            'confirmed', 'in_production', 'ready_for_fitting', 'alterations',
-            'ready_for_collection', 'completed', 'collected', 'cancelled'
-          ]
-          && request.resource.data.quoteStatus in ['not_quoted', 'ready', 'declined']
+          && (request.resource.data.status in [
+            'new', 'reviewing', 'awaiting_customer', 'quote_ready', 'confirmed',
+            'in_production', 'ready_for_fitting', 'alterations', 'ready_for_collection',
+            'completed', 'collected', 'cancelled'
+          ] || (resource.data.status == 'quote_accepted' && request.resource.data.status == 'quote_accepted'))
+          && (request.resource.data.quoteStatus in ['not_quoted', 'ready', 'declined'] || (resource.data.quoteStatus == 'accepted' && request.resource.data.quoteStatus == 'accepted'))
           && request.resource.data.paymentStatus in ['unpaid', 'deposit_pending', 'partially_paid', 'paid', 'refunded']
           && request.resource.data.productionStage in [
             'not_started', 'awaiting_fabric', 'cutting', 'sewing', 'fitting',
