@@ -15,7 +15,7 @@ const loginRoute = read("src/app/api/operations-login/route.ts");
 const firestoreRules = read("firestore.rules");
 const storageRules = read("storage.rules");
 
-check("Request creation requires a bearer token", /authorization[\s\S]{0,100}Bearer\\s\+/.test(createRoute));
+check("Request creation requires a bearer token", /authorization[\s\S]{0,100}Bearer\\s+/.test(createRoute));
 check("Request creation verifies Firebase ID tokens", /verifyIdToken\(bearer\[1\]\)/.test(createRoute));
 check("Request creation is idempotent against duplicate request IDs", /runTransaction[\s\S]*REQUEST_ID_ALREADY_EXISTS/.test(createRoute));
 check("Live catalogue rejects inactive or missing services", /catalogue\.docs\.find[\s\S]*active !== true/.test(createRoute));
@@ -36,5 +36,5 @@ check("Storage has a default-deny catch-all", /match \/\{allPaths=\*\*\}[\s\S]*a
 for (const item of checks) {
   console.log(`${item.passed ? "PASS" : "FAIL"} ${item.label}`);
 }
-console.log(`\\nSecurity boundary source checks: ${checks.length - failures.length}/${checks.length} passed.`);
+console.log(`\nSecurity boundary source checks: ${checks.length - failures.length}/${checks.length} passed.`);
 if (failures.length) process.exitCode = 1;
