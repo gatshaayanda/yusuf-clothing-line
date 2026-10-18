@@ -265,3 +265,23 @@ img,svg{max-width:100%}
 .yusufCatalogEmpty strong{font-family:Georgia,serif;font-weight:400;font-size:1.4rem}
 .yusufCatalogEmpty p{font-size:.8rem;color:#756a63;line-height:1.6}
 .yusufCatalogEmpty a{display:inline-block;color:#6B2636;font-size:.76rem;font-weight:800;border-bottom:1px solid #c9b7ac;padding-bottom:5px}
+
+
+/* Yusuf admin access gate */
+.yusufAdminGate{min-height:100vh;background:#F8F5F0;color:#24201F;padding:24px 16px;font-family:Arial,Helvetica,sans-serif}
+.yusufAdminGateShell{width:min(100%,760px);margin:0 auto}
+.yusufAdminGatePanel{max-width:520px;margin:70px auto;background:#fff;border:1px solid #e2d8cf;padding:clamp(22px,5vw,38px)}
+.yusufAdminGatePanel h1,.yusufAdminGateLoading h1{font-family:Georgia,serif;font-size:clamp(2rem,6vw,3.2rem);font-weight:400;line-height:1.05;margin:10px 0}
+.yusufAdminGatePanel>p,.yusufAdminGateLoading p{font-size:.82rem;line-height:1.7;color:#6d625c}
+.yusufAdminGateForm{display:grid;gap:17px;margin-top:25px}
+.yusufAdminGateForm label{display:grid;gap:8px;font-size:.76rem;font-weight:800}
+.yusufAdminGateForm input{width:100%;border:1px solid #d8cec4;padding:13px;background:#fcfaf7;font-size:.9rem}
+.yusufAdminGateForm input:focus{outline:3px solid rgba(107,38,54,.16);border-color:#6B2636}
+.yusufAdminSignIn,.yusufAdminSignOut{border:0;background:#6B2636;color:#fff;padding:13px 16px;font-size:.78rem;font-weight:800;cursor:pointer}
+.yusufAdminSignIn:disabled{opacity:.6;cursor:wait}
+.yusufAdminAuthorized{min-height:100vh;background:#F8F5F0}
+.yusufAdminAccountBar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:10px clamp(14px,4vw,56px);background:#451723;color:#fff;font-size:.7rem}
+.yusufAdminAccountBar .yusufAdminSignOut{background:#F8F5F0;color:#6B2636;padding:8px 12px}
+.yusufAdminGateLoading{min-height:75vh;display:grid;align-content:center;justify-items:center;text-align:center}
+.yusufAdminGateLoading>div{font-size:2rem}
+@media(max-width:550px){.yusufAdminGatePanel{margin:28px auto}.yusufAdminAccountBar{align-items:flex-start}}
