@@ -1,57 +1,36 @@
-# The Plug
+# Yusuf Clothing Line
 
-**The Plug — Sneakers & Apparel Sourcing**
+Mobile-first custom-tailoring and alterations platform for Botswana. This repository was initialized from the mandatory `gatshaayanda/the-plug` foundation; inherited features are not considered approved or production-ready until they have been inspected and adapted to this business.
 
-Mobile-first sourcing and customer operations PWA for sneaker and apparel requests in Botswana.
+## Product direction
 
-## Customer flow
-Home → Catalogue → Request a product → Request tracking → Customer account
+**Customer journey:** discover tailoring services and garment types → choose a style/fabric and describe the work → provide measurements or request fitting help → optionally attach reference images → request a quotation or submit an order when terms are clear → receive an honest acknowledgement → track progress and order history.
 
-Customers can browse available products, ask The Plug to source a specific sneaker or apparel item, follow request progress, and message the business.
+**Business operations:** protected admin workspace for service/catalogue CRUD, customer requests, measurements, quotations, fitting appointments, production stages, due dates, deposits/balances, payment status and collection/delivery. Catalogue changes must not rewrite historical order snapshots.
 
-## Operations
-/admin is protected by Firebase Authentication plus admins/{uid} with role owner/staff.
+WhatsApp is an optional supplementary contact channel. The normal customer journey must remain inside the app. Prices, lead times, policies and examples must be labelled as illustrative until Yusuf confirms them.
 
-## Development
-npm install
-npm run dev
+## Local setup
 
-Quality gates:
+1. Use the Node version specified in `.nvmrc`.
+2. Copy `.env.example` to `.env.local`; the public Firebase web configuration is prefilled for the dedicated `yusuf-clothing-line` project.
+3. Configure server credentials only for integrations actually retained. Never commit `.env.local`, service-account JSON or provider tokens.
+4. Run `npm ci`, then `npm run dev`.
+
+## Verification
+
+Available initial commands:
+
+```bash
+npm run verify:identity
 npx tsc --noEmit
 npm run lint
-npm run verify:identity
 npm run build
+git diff --check
+```
 
-See AGENTS.md for the implementation contract.
+A successful build proves only the checks it actually runs. It does not prove Firebase rules are deployed, data persists in the intended project, uploads work, push notifications arrive, or PWA installation/offline behavior works on devices.
 
-## Notifications
-Customer and operations notifications use Firebase Cloud Messaging. Notification permission is requested only from the user's explicit settings action.
+## Current implementation boundary
 
-## Customer journey analytics
-
-The admin dashboard records server-side journey events for request-flow entry, account confirmation, request submission, sharing and invites, notification choices, and external catalogue/Instagram visits. Admin activity is excluded from customer journey counts. Event access is governed by Firestore rules; review the rules and analytics route together when changing event names or payloads.
-
-## Storefront launch QA
-
-Run this checklist against the exact preview commit before merging or announcing a public launch.
-
-### Customer
-- [ ] Open the home page on mobile and desktop; confirm published, in-date public finds/offers render with their images and prices.
-- [ ] Save a find or offer, open Saved Finds, refresh, and confirm the snapshot remains available.
-- [ ] Remove a saved item and confirm it disappears from Saved Finds; confirm saving it again works.
-- [ ] Start a request from a product card and confirm the product title, listed-price snapshot, and item type carry into the form and submitted private request.
-- [ ] Confirm request copy makes clear that submitting is not payment, a stock reservation, or a confirmed sale.
-- [ ] Confirm a request is visible in the customer tracking flow and the admin queue after submission.
-- [ ] Test source-request entry, navigation, install/PWA behavior, and browser back on a phone-sized viewport.
-
-### Admin
-- [ ] Sign in as an authorized admin; confirm a non-admin account cannot access admin data or write storefront content.
-- [ ] Create a draft find and a draft offer with category, price, image, and display order; confirm drafts do not appear publicly.
-- [ ] Edit the title, price, category, image, audience, status, and active dates; verify each saved value after refresh.
-- [ ] Publish an in-date public item and confirm it appears on the storefront; pause/archive/delete it and verify the expected public behavior.
-- [ ] Confirm image upload, saved image URL, preview, replacement, and removal work with the configured Firebase Storage rules.
-- [ ] Open journey analytics and compare 7/30/90-day and all-time views; verify product interest, bookmarks, and monthly demand signals.
-- [ ] Treat analytics as interaction signals, not unique people, paid orders, confirmed sales, or proof of stock.
-
-### Release boundary
-Saved Finds are stored in the current browser/device and are not synced across devices. Product requests are purchase intent only; Frank confirms availability, final price, and payment directly. Do not describe this release as online payment checkout.
+The repository is a freshly cloned foundation and is undergoing a controlled identity, infrastructure and workflow reset. Do not treat inherited sourcing/community features, The Plug routes, seeded content, shared operations login, UploadThing, notification jobs or rules as finished Yusuf functionality. See `AGENTS.md` for required inspection, security, implementation and QA gates.
