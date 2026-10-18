@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { signInAnonymously } from "firebase/auth";
-import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot } from "firebase/firestore";
 import { deleteObject, ref, uploadBytes } from "firebase/storage";
 import { auth, db, hasFirebaseWebConfig, storage } from "@/lib/firebase/client";
 
@@ -59,7 +59,7 @@ export default function RequestForm() {
   function chooseFile(next: File | null) {
     setError("");
     if (!next) { setFile(null); return; }
-    if (!next.type.startsWith("image/")) {
+    if (!["image/jpeg", "image/png", "image/webp", "image/avif"].includes(next.type)) {
       setFile(null);
       setError("Please choose an image file (JPG, PNG or WebP).");
       return;
@@ -84,6 +84,10 @@ export default function RequestForm() {
       setError("Choose a service and add your name, phone number and garment or alteration details.");
       return;
     }
+    if (!navigator.onLine) {
+      setError("You appear to be offline. Your request has not been submitted; reconnect and try again.");
+      return;
+    }
     setBusy(true);
     let uploadedPath = "";
     try {
@@ -99,32 +103,34 @@ export default function RequestForm() {
         });
         referenceImage = { storagePath: uploadedPath, name: file.name.slice(0, 180), type: file.type, size: file.size };
       }
-      const now = new Date().toISOString();
       const serviceId = service.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-      await setDoc(requestRef, {
-        customerId: current.uid,
-        customerName: name.trim(),
-        phone: phone.trim(),
-        email: email.trim(),
-        requestType: "quote_request",
-        serviceId,
-        serviceName: service,
-        garmentType: garmentType.trim(),
-        stylePreferences: stylePreferences.trim(),
-        fabricPreferences: fabricPreferences.trim(),
-        measurements: measurements.trim(),
-        needsFittingHelp,
-        preferredFittingDate,
-        referenceImage,
-        notes: notes.trim(),
-        status: "new",
-        quoteStatus: "not_quoted",
-        paymentStatus: "unpaid",
-        productionStage: "not_started",
-        createdAt: now,
-        updatedAt: now
+      const token = await current.getIdToken();
+      const response = await fetch("/api/tailoring-request/create", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requestId: requestRef.id,
+          customerName: name.trim(),
+          phone: phone.trim(),
+          email: email.trim(),
+          requestType: "quote_request",
+          serviceId,
+          serviceName: service,
+          garmentType: garmentType.trim(),
+          stylePreferences: stylePreferences.trim(),
+          fabricPreferences: fabricPreferences.trim(),
+          measurements: measurements.trim(),
+          needsFittingHelp,
+          preferredFittingDate,
+          referenceImage,
+          notes: notes.trim()
+        })
       });
-      setSavedId(requestRef.id);
+      const result = await response.json().catch(() => ({})) as { requestId?: string; error?: string };
+      if (!response.ok || !result.requestId) {
+        throw new Error(result.error || "The request could not be saved. No request was confirmed; please retry.");
+      }
+      setSavedId(result.requestId);
       setFile(null);
     } catch (cause) {
       if (uploadedPath) {
@@ -132,10 +138,10 @@ export default function RequestForm() {
       }
       const code = typeof cause === "object" && cause !== null && "code" in cause
         ? String((cause as { code?: unknown }).code) : "";
-      setError(code === "permission-denied"
-        ? "The request could not be saved because access is not configured for this session. Nothing was confirmed; please retry later."
-        : code === "storage/unauthorized"
-          ? "The reference image could not be saved securely. No request was submitted; remove the image or try again later."
+      setError(code === "storage/unauthorized"
+        ? "The reference image could not be saved securely. No request was submitted; remove the image or try again later."
+        : cause instanceof Error && cause.message && !cause.message.startsWith("Firebase:")
+          ? cause.message
           : "We couldn't save this request. Your form details are still here; check your connection and try again.");
     } finally {
       setBusy(false);
