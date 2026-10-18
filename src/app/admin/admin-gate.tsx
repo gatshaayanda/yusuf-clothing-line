@@ -2,20 +2,10 @@
 import {onAuthStateChanged,signInWithCustomToken,signOut,type User} from "firebase/auth";
 import {doc,onSnapshot} from "firebase/firestore";
 import {useEffect,useState} from "react";
-import {auth,db} from "@/lib/firebase/client";
+import {auth,db,hasFirebaseWebConfig} from "@/lib/firebase/client";
 
 function hasAdminRole(data:Record<string,unknown>|undefined){
  return ["owner","staff"].includes(String(data?.role??"").toLowerCase());
-}
-
-function friendlyAuthError(err:unknown){
- const code=typeof err==="object"&&err!==null&&"code" in err?String((err as {code?:unknown}).code):"";
- if(["auth/invalid-credential","auth/wrong-password","auth/user-not-found","auth/invalid-login-credentials"].includes(code)){
-  return "Sign-in failed. Check your email and password and try again.";
- }
- if(code==="auth/too-many-requests") return "Too many sign-in attempts. Wait a moment and try again.";
- if(code==="auth/network-request-failed") return "We could not reach Firebase. Check your internet connection and try again.";
- return err instanceof Error?err.message:"We could not sign you in. Check your details.";
 }
 
 export default function AdminGate({children}:{children:React.ReactNode}){
@@ -45,6 +35,7 @@ export default function AdminGate({children}:{children:React.ReactNode}){
 
  async function signIn(e:React.FormEvent){
   e.preventDefault();setBusy(true);setError("");
+  if(!hasFirebaseWebConfig){setError("Yusuf Firebase configuration is missing or points to another project. Sign-in is disabled until .env.local is corrected.");setBusy(false);return;}
   try{
    const response=await fetch("/api/operations-login",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({word:accessWord})});
    const payload=await response.json() as {token?:string;error?:string};
@@ -61,7 +52,7 @@ export default function AdminGate({children}:{children:React.ReactNode}){
   finally{setBusy(false)}
  }
 
- if(checking)return <main className="adminPage"><div className="adminShell"><div className="emptyState"><div>🔐</div><h1>Opening Yusuf Clothing Line Admin</h1><p>Checking access…</p></div></div></main>;
- if(user&&authorized)return <div className="adminAuthorized">{offline&&<div className="adminAccountBar"><span>Yusuf Clothing Line Admin · Offline mode · cached admin access</span><span>Changes will sync when connection returns.</span></div>}<div className="adminAccountBar"><span>Yusuf Clothing Line Admin · {user.email??"authorized staff"}</span><button className="button buttonLight" type="button" onClick={()=>void signOut(auth)}>Sign out</button></div>{children}</div>;
- return <main className="adminPage"><div className="adminShell"><section className="adminPanel" style={{maxWidth:520,margin:"80px auto"}}><span className="kicker">Yusuf Clothing Line · Operations</span><h1>Operations sign in</h1><p>Enter your Operations access word to manage sourcing requests, catalogue and customer conversations.</p><form className="adminForm" onSubmit={signIn}><label>Access word<input type="password" value={accessWord} onChange={e=>setAccessWord(e.target.value)} autoComplete="current-password" required autoFocus/></label><button className="button buttonPrimary" type="submit" disabled={busy}>{busy?"Checking access…":"Enter Operations"}</button></form>{error&&<p role="alert" className="notice">{error}</p>}</section></div></main>
+ if(checking)return <main className="yusufAdminGate"><div className="yusufAdminGateShell"><div className="yusufAdminGateLoading"><div>🔐</div><h1>Opening Yusuf Clothing Line Admin</h1><p>Checking access…</p></div></div></main>;
+ if(user&&authorized)return <div className="yusufAdminAuthorized">{offline&&<div className="yusufAdminAccountBar"><span>Yusuf Clothing Line Admin · Connection unavailable</span><span>Reconnect before saving changes.</span></div>}<div className="yusufAdminAccountBar"><span>Yusuf Clothing Line Admin · {user.email??"authorized staff"}</span><button className="yusufAdminSignOut" type="button" onClick={()=>void signOut(auth)}>Sign out</button></div>{children}</div>;
+ return <main className="yusufAdminGate"><div className="yusufAdminGateShell"><section className="yusufAdminGatePanel" style={{maxWidth:520,margin:"80px auto"}}><span className="yusufEyebrow">Yusuf Clothing Line · Operations</span><h1>Operations sign in</h1><p>Enter your Operations access word to manage tailoring requests, services, quotations, fittings and production.</p><form className="yusufAdminGateForm" onSubmit={signIn}><label>Access word<input type="password" value={accessWord} onChange={e=>setAccessWord(e.target.value)} autoComplete="current-password" required autoFocus/></label><button className="yusufAdminSignIn" type="submit" disabled={busy}>{busy?"Checking access…":"Enter Operations"}</button></form>{error&&<p role="alert" className="yusufAdminError">{error}</p>}</section></div></main>
 }
