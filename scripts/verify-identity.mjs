@@ -11,9 +11,6 @@ const textExtensions = new Set([".ts", ".tsx", ".js", ".mjs", ".cjs", ".json", "
 function read(relativePath) {
   return fs.readFileSync(path.join(root, relativePath), "utf8");
 }
-function exists(relativePath) {
-  return fs.existsSync(path.join(root, relativePath));
-}
 function walk(dir) {
   const files = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
