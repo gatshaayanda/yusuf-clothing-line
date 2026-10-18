@@ -1,0 +1,49 @@
+{
+  "manifestName": "Yusuf Clothing Line | Tailoring & Alterations",
+  "shortName": "Yusuf Clothing",
+  "themeColor": "#6B2636",
+  "canonicalIcon": "/yusuf-icon-192.png",
+  "serviceWorkerCachePrefix": "yusuf-clothing-",
+  "firebaseProjectId": "yusuf-clothing-line",
+  "forbiddenPatterns": [
+    "The Plug",
+    "the-plug-pearl.vercel.app",
+    "the-plug.vercel.app",
+    "africhiko.firebaseapp.com",
+    "africhiko",
+    "boemo-joos-food-deals",
+    "boemoMedia",
+    "namane-tyres.vercel.app",
+    "plug-icon.svg",
+    "plug-icon-192.png",
+    "plug-icon-512.png",
+    "#0866FF"
+  ],
+  "allowedLegacyStrings": [
+    {
+      "path": "AGENTS.md",
+      "pattern": "The Plug",
+      "reason": "The mandatory source repository is named in the engineering contract; this is not customer-facing identity."
+    },
+    {
+      "path": "README.md",
+      "pattern": "The Plug",
+      "reason": "The README records the mandatory foundation and explicitly warns against credential reuse."
+    },
+    {
+      "path": "scripts/identity.config.json",
+      "pattern": "The Plug",
+      "reason": "The identity gate must name the source brand to forbid it in application files."
+    },
+    {
+      "path": "scripts/identity.config.json",
+      "pattern": "africhiko",
+      "reason": "The identity gate lists the inherited Firebase project identifier as forbidden."
+    },
+    {
+      "path": "scripts/identity.config.json",
+      "pattern": "boemo",
+      "reason": "The identity gate lists inherited client resources as forbidden."
+    }
+  ]
+}
