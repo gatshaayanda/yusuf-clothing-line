@@ -833,3 +833,88 @@ button.plugProductAction{width:100%;align-items:center;background:transparent;bo
 .plugDisclaimerActions span{color:#333;font-size:.8rem;font-weight:650}
 .plugStudioPanel>form>p{color:#333;font-size:.82rem;line-height:1.55}
 @media(max-width:680px){.plugDisclaimerActions{align-items:stretch;flex-direction:column}.plugDisclaimerActions button{width:100%;min-height:44px}.plugDisclaimerActions span{text-align:left}}
+
+
+/* Yusuf Clothing Line — tailored editorial storefront */
+.yusufHome{--yusuf-wine:#6B2636;--yusuf-wine-dark:#451723;--yusuf-paper:#F8F5F0;--yusuf-ink:#24201F;--yusuf-muted:#6D6561;--yusuf-sand:#B68B5E;min-height:100vh;background:var(--yusuf-paper);color:var(--yusuf-ink);font-family:Arial,Helvetica,sans-serif}
+.yusufHome a{color:inherit;text-decoration:none}
+.yusufAnnouncement{display:flex;justify-content:space-between;gap:16px;padding:10px clamp(18px,5vw,76px);background:var(--yusuf-wine-dark);color:#fff;font-size:.66rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.yusufHeader{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px clamp(18px,5vw,76px);border-bottom:1px solid #e5dcd2;background:rgba(248,245,240,.96)}
+.yusufWordmark{display:flex;align-items:center;gap:10px;min-width:max-content}
+.yusufLogoMark{width:42px;height:42px;border:1px solid var(--yusuf-wine);border-radius:50%;display:grid;place-items:center;position:relative}
+.yusufLogoMark:before{content:"";width:19px;height:25px;border:1.5px solid var(--yusuf-wine);border-radius:10px 10px 3px 3px;transform:rotate(18deg)}
+.yusufLogoMark span{position:absolute;width:29px;height:1px;background:var(--yusuf-sand);transform:rotate(-42deg)}
+.yusufWordmark strong,.yusufWordmark small{display:block}
+.yusufWordmark strong{font-family:Georgia,serif;font-size:1.15rem;letter-spacing:.16em}
+.yusufWordmark small{font-size:.58rem;letter-spacing:.23em;margin-top:3px}
+.yusufNav{display:flex;align-items:center;gap:clamp(14px,2.7vw,34px);font-size:.82rem;color:#514945}
+.yusufNav a:hover,.yusufFooter a:hover{color:var(--yusuf-wine);text-decoration:underline;text-underline-offset:4px}
+.yusufHeaderCta{background:var(--yusuf-wine);color:#fff!important;padding:13px 16px;font-size:.78rem;font-weight:800;white-space:nowrap}
+.yusufHeaderCta span,.yusufButtonPrimary span{margin-left:14px}
+.yusufHero{display:grid;grid-template-columns:1.05fr .95fr;min-height:530px;padding:clamp(42px,7vw,96px) clamp(18px,8vw,120px);gap:clamp(35px,8vw,112px);align-items:center;overflow:hidden}
+.yusufEyebrow{font-size:.65rem;font-weight:800;letter-spacing:.17em;text-transform:uppercase;color:var(--yusuf-wine);margin:0 0 18px}
+.yusufEyebrow>span{display:inline-block;width:25px;height:1px;background:var(--yusuf-sand);vertical-align:middle;margin-right:8px}
+.yusufHero h1,.yusufSectionIntro h2,.yusufProcess h2,.yusufClosing h2{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:clamp(3.2rem,7vw,6.8rem);letter-spacing:-.055em;line-height:.93;margin:0}
+.yusufHero h1 em,.yusufSectionIntro h2 em,.yusufProcess h2 em,.yusufClosing h2 em{font-weight:400;color:var(--yusuf-wine)}
+.yusufHeroText{max-width:480px;font-size:1.04rem;line-height:1.8;color:#5e5551;margin:25px 0 0}
+.yusufHeroActions{display:flex;align-items:center;gap:25px;flex-wrap:wrap;margin-top:30px}
+.yusufButtonPrimary{display:inline-flex;align-items:center;justify-content:space-between;gap:14px;background:var(--yusuf-wine);color:#fff!important;padding:16px 19px;font-weight:800;font-size:.82rem;min-height:52px}
+.yusufButtonPrimary:hover,.yusufHeaderCta:hover{background:var(--yusuf-wine-dark)}
+.yusufTextLink{font-size:.82rem;font-weight:800;border-bottom:1px solid #c5b5a7;padding:0 0 7px}
+.yusufTextLink span{margin-left:8px;color:var(--yusuf-wine)}
+.yusufFinePrint{font-size:.72rem;line-height:1.6;color:#7d716b;max-width:410px;margin-top:20px}
+.yusufHeroArt{position:relative;max-width:490px;width:100%;justify-self:center}
+.yusufArtFrame{position:relative;aspect-ratio:4/4.7;background:#e9dfd2;overflow:hidden;border:1px solid #d8c5b2}
+.yusufArtFrame:before{content:"";position:absolute;inset:20px;border:1px solid rgba(107,38,54,.4);z-index:2}
+.yusufPatternCircle{position:absolute;width:72%;aspect-ratio:1;border:1px solid var(--yusuf-wine);border-radius:50%;top:13%;left:14%;background:repeating-radial-gradient(circle at center,transparent 0 17px,rgba(107,38,54,.18) 18px 19px,transparent 20px 33px)}
+.yusufPatternCircle:after{content:"";position:absolute;inset:17%;border:1px dashed var(--yusuf-sand);border-radius:50%}
+.yusufPatternLine{position:absolute;width:1px;height:92%;background:rgba(107,38,54,.38);top:4%;left:50%;transform:rotate(29deg)}
+.yusufPatternLineTwo{transform:rotate(-29deg)}
+.yusufPatternTape{position:absolute;right:-4%;top:46%;background:var(--yusuf-wine);color:#fff;padding:11px 15px;letter-spacing:.18em;font-size:.62rem;transform:rotate(90deg);transform-origin:right center}
+.yusufPatternLabel{position:absolute;bottom:9%;left:10%;display:flex;align-items:center;gap:12px}
+.yusufPatternLabel span{font-family:Georgia,serif;font-size:2.8rem;color:var(--yusuf-wine)}
+.yusufPatternLabel small{font-size:.6rem;letter-spacing:.14em;max-width:85px;line-height:1.5}
+.yusufArtIndex{display:block;text-align:right;font-size:.59rem;letter-spacing:.17em;margin-top:12px;color:#786a62}
+.yusufTrustStrip{display:flex;justify-content:space-around;gap:20px;flex-wrap:wrap;padding:20px clamp(18px,5vw,76px);background:#eee6dc;border-top:1px solid #e1d5c8;border-bottom:1px solid #e1d5c8;font-size:.78rem;color:#504540}
+.yusufTrustStrip b{color:var(--yusuf-wine);margin-right:8px}
+.yusufServices{padding:clamp(55px,8vw,105px) clamp(18px,6vw,90px)}
+.yusufSectionIntro{display:flex;justify-content:space-between;align-items:end;gap:32px;margin-bottom:38px}
+.yusufSectionIntro h2,.yusufProcess h2,.yusufClosing h2{font-size:clamp(2.8rem,5vw,5rem)}
+.yusufSectionIntro>p{max-width:370px;line-height:1.75;color:var(--yusuf-muted);margin:0 0 5px}
+.yusufServiceGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.yusufServiceCard{min-width:0;background:#fff;border:1px solid #e4dbd1}
+.yusufServiceVisual{height:190px;position:relative;overflow:hidden;background:#eadfd2;display:grid;place-items:center}
+.yusufServiceVisual>span{position:absolute;top:13px;left:15px;font-size:.63rem;letter-spacing:.16em;color:#62524a}
+.yusufClothShape{width:54%;height:74%;background:linear-gradient(140deg,rgba(255,255,255,.65),transparent 35%),var(--yusuf-wine);clip-path:polygon(26% 0,74% 0,100% 100%,0 100%);position:relative}
+.yusufClothShape:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 9px,rgba(255,255,255,.13) 10px 11px)}
+.yusufServiceCard.sand .yusufServiceVisual{background:#e7d6c2}.yusufServiceCard.sand .yusufClothShape{background:linear-gradient(140deg,rgba(255,255,255,.65),transparent 35%),#b68b5e;clip-path:polygon(20% 0,80% 0,96% 100%,4% 100%)}
+.yusufServiceCard.olive .yusufServiceVisual{background:#dfe1d5}.yusufServiceCard.olive .yusufClothShape{background:linear-gradient(140deg,rgba(255,255,255,.45),transparent 35%),#59634a;clip-path:polygon(30% 0,70% 0,100% 100%,0 100%)}
+.yusufServiceCard.ink .yusufServiceVisual{background:#dedbd7}.yusufServiceCard.ink .yusufClothShape{background:linear-gradient(140deg,rgba(255,255,255,.3),transparent 35%),#363333;clip-path:polygon(24% 0,76% 0,100% 100%,0 100%)}
+.yusufServiceBody{padding:18px 17px 20px}
+.yusufServiceMeta{display:flex;justify-content:space-between;gap:8px;font-size:.52rem;letter-spacing:.1em;color:#86776d}
+.yusufServiceBody h3{font-family:Georgia,serif;text-transform:none;letter-spacing:-.02em;font-size:1.4rem;font-weight:400;line-height:1.15;margin:19px 0 10px}
+.yusufServiceBody>p{font-size:.8rem;line-height:1.65;color:#6d6561;min-height:79px;margin:0}
+.yusufServicePrice{border-top:1px solid #e9e1d9;padding-top:15px;margin-top:18px;min-height:67px}
+.yusufServicePrice strong,.yusufServicePrice small{display:block}
+.yusufServicePrice strong{font-family:Georgia,serif;font-size:1.12rem;font-weight:400;color:var(--yusuf-wine)}
+.yusufServicePrice small{font-size:.62rem;line-height:1.4;color:#81756d;margin-top:4px}
+.yusufServiceLink{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e9e1d9;padding-top:14px;margin-top:12px;font-size:.76rem;font-weight:800}
+.yusufServiceLink span{font-size:1rem;color:var(--yusuf-wine)}
+.yusufPricingNotice{max-width:850px;font-size:.72rem;line-height:1.7;color:#766a62;margin:20px 0 0}
+.yusufProcess{background:#4b1d2a;color:#fff;padding:clamp(52px,8vw,100px) clamp(18px,7vw,100px);display:grid;grid-template-columns:.85fr 1.15fr;gap:45px}
+.yusufProcess .yusufEyebrow{color:#e0c8ad}
+.yusufProcess h2 em{color:#e2c8a9}
+.yusufProcessSteps{display:grid;grid-template-columns:repeat(3,1fr);gap:23px}
+.yusufProcessSteps article{border-top:1px solid rgba(255,255,255,.35);padding-top:15px}
+.yusufProcessSteps article>span{font-size:.65rem;color:#e0c8ad;letter-spacing:.15em}
+.yusufProcessSteps h3{font-family:Georgia,serif;text-transform:none;font-weight:400;font-size:1.18rem;margin:25px 0 10px}
+.yusufProcessSteps p{font-size:.77rem;line-height:1.7;color:#e3d6d5;margin:0}
+.yusufClosing{display:flex;align-items:center;justify-content:space-between;gap:35px;padding:clamp(48px,7vw,86px) clamp(18px,7vw,100px)}
+.yusufFooter{padding:28px clamp(18px,5vw,76px);border-top:1px solid #e2d8cf;display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap}
+.yusufFooterBrand{font-family:Georgia,serif;letter-spacing:.16em;font-size:1rem}
+.yusufFooterBrand span{display:block;font-family:Arial,sans-serif;font-size:.52rem;letter-spacing:.22em;margin-top:5px}
+.yusufFooter p{font-size:.74rem;color:#766a62}
+.yusufFooter>div{display:flex;gap:18px;font-size:.74rem}
+.yusufFooter>small{width:100%;font-size:.65rem;color:#86776d}
+@media(max-width:1000px){.yusufServiceGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.yusufProcess{grid-template-columns:1fr}.yusufProcessSteps{gap:18px}}
+@media(max-width:700px){.yusufAnnouncement{font-size:.55rem;letter-spacing:.07em}.yusufAnnouncement span:last-child{display:none}.yusufHeader{gap:10px;padding-top:13px;padding-bottom:13px}.yusufWordmark strong{font-size:1rem}.yusufWordmark small{font-size:.5rem}.yusufLogoMark{width:36px;height:36px}.yusufNav{display:none}.yusufHeaderCta{font-size:.68rem;padding:12px 11px}.yusufHero{grid-template-columns:1fr;gap:32px;padding-top:48px;padding-bottom:44px}.yusufHero h1{font-size:clamp(3.5rem,16vw,5.3rem)}.yusufHeroArt{max-width:390px}.yusufArtFrame{aspect-ratio:1/1.03}.yusufTrustStrip{justify-content:flex-start;display:grid;gap:12px;font-size:.72rem}.yusufSectionIntro{display:block}.yusufSectionIntro>p{margin-top:22px}.yusufServiceGrid{gap:10px}.yusufServiceVisual{height:145px}.yusufServiceBody{padding:13px 12px 15px}.yusufServiceMeta{font-size:.44rem}.yusufServiceBody h3{font-size:1.18rem;margin-top:15px}.yusufServiceBody>p{font-size:.74rem;min-height:115px}.yusufServicePrice strong{font-size:1rem}.yusufServiceLink{font-size:.68rem}.yusufProcessSteps{grid-template-columns:1fr;gap:18px}.yusufProcessSteps article{display:grid;grid-template-columns:36px 1fr;column-gap:12px}.yusufProcessSteps article>span{grid-row:span 2}.yusufProcessSteps h3{margin:0 0 7px}.yusufClosing{align-items:flex-start;flex-direction:column}.yusufFooter{align-items:flex-start}.yusufFooter p{width:100%;margin:0}.yusufFooter>small{line-height:1.6}}
