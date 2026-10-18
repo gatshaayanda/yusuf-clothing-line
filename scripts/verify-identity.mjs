@@ -33,6 +33,9 @@ for (const [file, expected] of [
   ["public/sw.js", /__YUSUF_FIREBASE_CONFIG__/],
   [".env.example", /NEXT_PUBLIC_FIREBASE_PROJECT_ID=yusuf-clothing-line/],
   [".env.example", /FIREBASE_PROJECT_ID=yusuf-clothing-line/],
+  ["src/lib/firebase/client.ts", /projectId: "yusuf-clothing-line"/],
+  ["src/lib/firebase/client.ts", /matchesYusufProject/],
+  ["src/app/api/firebase/messaging-sw-config/route.ts", /NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "yusuf-clothing-line"/],
 ]) {
   if (!expected.test(read(file))) failures.push(file + ": missing expected Yusuf identity/configuration");
 }
