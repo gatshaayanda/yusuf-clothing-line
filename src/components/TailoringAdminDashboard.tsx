@@ -49,7 +49,7 @@ const statusOptions = [
   ["ready_for_fitting", "Ready for fitting"], ["alterations", "Alterations"], ["ready_for_collection", "Ready for collection"],
   ["completed", "Completed"], ["collected", "Collected"], ["cancelled", "Cancelled"]
 ];
-const quoteOptions = [["not_quoted", "Not quoted"], ["ready", "Quote ready"], ["declined", "Declined"]];
+const quoteOptions = [["not_quoted", "Not quoted"], ["ready", "Quote ready"], ["declined", "Declined"], ["accepted", "Accepted by customer"]];
 const paymentOptions = [["unpaid", "Unpaid"], ["deposit_pending", "Deposit pending"], ["partially_paid", "Partially paid"], ["paid", "Paid"], ["refunded", "Refunded"]];
 const productionOptions = [["not_started", "Not started"], ["awaiting_fabric", "Awaiting fabric"], ["cutting", "Cutting"], ["sewing", "Sewing"], ["fitting", "Fitting"], ["alterations", "Alterations"], ["quality_check", "Quality check"], ["ready_for_collection", "Ready for collection"], ["collected", "Collected"], ["cancelled", "Cancelled"]];
 
@@ -265,7 +265,7 @@ export default function TailoringAdminDashboard() {
       ) : (
         <section className="yusufAdminPanel">
           <div className="yusufAdminPanelIntro"><div><p className="yusufEyebrow">CUSTOMER WORK QUEUE</p><h2>Requests & production</h2></div><p>Submitting a request is not an accepted quote, confirmed order or payment. Record each decision explicitly.</p></div>
-          <div className="yusufAdminFilters"><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search customer, phone, service or reference…" aria-label="Search requests" /><select value={filter} onChange={e => setFilter(e.target.value)} aria-label="Filter request status"><option value="all">All statuses</option>{statusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></div>
+          <div className="yusufAdminFilters"><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search customer, phone, service or reference…" aria-label="Search requests" /><select value={filter} onChange={e => setFilter(e.target.value)} aria-label="Filter request status"><option value="all">All statuses</option>{statusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}<option value="quote_accepted">Quote accepted</option></select></div>
           <div className="yusufAdminRequestList">
             {visibleRequests.length === 0 && <div className="yusufAdminEmpty"><strong>No matching requests</strong><p>New customer requests will appear here after they are saved.</p></div>}
             {visibleRequests.map(item => {
@@ -281,8 +281,8 @@ export default function TailoringAdminDashboard() {
                   {item.referenceImage && <div className="yusufAdminReference"><button type="button" onClick={() => void showReference(item)}>View private reference image</button>{referencePreviews[item.id] && <img src={referencePreviews[item.id]} alt={"Private reference for " + item.garmentType} />}</div>}
                 </div>
                 <div className="yusufAdminRequestFields">
-                  <label>Status<select value={draft.status} onChange={e => patchDraft(item, { status: e.target.value })}>{statusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-                  <label>Quotation status<select value={draft.quoteStatus} onChange={e => patchDraft(item, { quoteStatus: e.target.value })}>{quoteOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+                  <label>Status<select value={draft.status} onChange={e => patchDraft(item, { status: e.target.value })}>{item.status === "quote_accepted" && <option value="quote_accepted" disabled>Quote accepted by customer</option>}{statusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+                  <label>Quotation status<select value={draft.quoteStatus} onChange={e => patchDraft(item, { quoteStatus: e.target.value })}>{quoteOptions.map(([value, label]) => <option key={value} value={value} disabled={value === "accepted"}>{label}</option>)}</select></label>
                   <label>Quote amount (P)<input type="number" min="0" step="0.01" value={draft.quoteAmount} onChange={e => patchDraft(item, { quoteAmount: e.target.value })} /></label>
                   <label>Deposit required (P)<input type="number" min="0" step="0.01" value={draft.depositRequired} onChange={e => patchDraft(item, { depositRequired: e.target.value })} /></label>
                   <label>Deposit received (P)<input type="number" min="0" step="0.01" value={draft.depositPaid} onChange={e => patchDraft(item, { depositPaid: e.target.value })} /></label>
