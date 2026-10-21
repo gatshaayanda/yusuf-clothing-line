@@ -85,7 +85,7 @@ for (const absolutePath of allFiles) {
   }
 }
 
-// Protect the Africhiko-approved install experience from accidental regressions.
+// Protect the approved installation experience from accidental regressions.
 const pwaRegister = read("src/app/pwa-register.tsx");
 const pwaStyles = read("src/app/pwa.css");
 const layoutSource = read("src/app/layout.tsx");
