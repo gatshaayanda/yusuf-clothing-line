@@ -109,6 +109,11 @@
       "path": "scripts/verify-clone-readiness.mjs",
       "pattern": "plug-icon-512.png",
       "reason": "The readiness gate explicitly asserts that this inherited asset is absent from the repository."
+    },
+    {
+      "path": "AGENTS.md",
+      "pattern": "africhiko",
+      "reason": "The repository engineering contract explicitly names the approved installation reference; this is documentation, not customer-facing identity."
     }
   ]
 }

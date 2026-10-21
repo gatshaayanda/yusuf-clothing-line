@@ -85,6 +85,27 @@ for (const absolutePath of allFiles) {
   }
 }
 
+// Protect the approved installation experience from accidental regressions.
+const pwaRegister = read("src/app/pwa-register.tsx");
+const pwaStyles = read("src/app/pwa.css");
+const layoutSource = read("src/app/layout.tsx");
+const installInvariants = [
+  ["retained native beforeinstallprompt event", pwaRegister.includes("beforeinstallprompt")],
+  ["direct native prompt invocation from install click", pwaRegister.includes("prompt.prompt()")],
+  ["branded dismissible Yusuf install card", pwaRegister.includes('className="yusufInstallCard"') && pwaRegister.includes('aria-label="Dismiss installation card"')],
+  ["native CTA gated by native availability or iOS Safari", pwaRegister.includes("nativeInstallAvailable || iosSafari")],
+  ["iOS Safari Share → Add to Home Screen guidance", pwaRegister.includes("Share") && pwaRegister.includes("Add to Home Screen")],
+  ["service-worker registration", pwaRegister.includes('navigator.serviceWorker.register("/sw.js")')],
+  ["safe-area-aware mobile install spacing", pwaStyles.includes("env(safe-area-inset-bottom)")],
+  ["early pre-hydration native event capture", layoutSource.includes("__yusufInstallPrompt") && layoutSource.includes("beforeinstallprompt")],
+];
+for (const [label, passed] of installInvariants) {
+  if (!passed) fail("PWA installation invariant missing: " + label + ".");
+}
+if (/Chrome.{0,30}menu|Install page as app|If your browser provides a native install prompt/i.test(pwaRegister)) {
+  fail("Generic desktop/Android installation fallback copy must not appear in the install controller.");
+}
+
 if (failures.length) {
   console.error("YUSUF IDENTITY VERIFICATION FAILED");
   for (const failure of failures) console.error(" - " + failure);
