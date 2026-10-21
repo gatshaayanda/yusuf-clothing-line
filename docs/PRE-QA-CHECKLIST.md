@@ -35,7 +35,10 @@ This checklist separates checks that run in GitHub Actions from checks that requ
 
 ## PWA and infrastructure
 
-- [ ] Confirm the install control invokes the native prompt when the browser exposes it; installation is optional.
+- [ ] Confirm the compact, dismissible Yusuf installation card appears on desktop/Android only while a retained `beforeinstallprompt` event is available; its click invokes `prompt()` directly.
+- [ ] Confirm no generic Chrome/Edge menu instructions, install modal, dead CTA or install card appears on desktop/Android when the native event is unavailable.
+- [ ] Confirm iPhone/iPad Safari receives Share → Add to Home Screen guidance, while other iOS browsers do not receive Safari-only instructions.
+- [ ] Confirm dismissing the card leaves the tailoring journey unobstructed and mobile safe-area/bottom-navigation spacing is respected.
 - [ ] Check manifest name, icons, theme, start URL and unique Yusuf cache namespace.
 - [ ] Test normal navigation and offline fallback on Android/Chromium and iOS/Safari separately.
 - [ ] Verify Firebase Authentication providers, server environment variables and service-account project ID.
